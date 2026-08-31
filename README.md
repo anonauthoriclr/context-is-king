@@ -92,10 +92,8 @@ variants for the base-model claim).
 
 ```bibtex
 @misc{anon2026contextisking,
-  title  = {Context Is King: How In-Context Specification Shapes the Geometry of Concepts},
-  author = {Anonymous},
-  year   = {2026},
-  eprint = {arXiv},
-  note   = {Preprint}
+  title = {Context Is King: How In-Context Specification Shapes the Geometry of Concepts},
+  year  = {2026},
+  note  = {Under review}
 }
 ```
