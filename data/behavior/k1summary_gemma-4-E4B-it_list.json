@@ -1,0 +1,51 @@
+{
+  "model": "google/gemma-4-E4B-it",
+  "mode": "list",
+  "base": false,
+  "nscr": 3,
+  "ntpl": 13,
+  "L": 32,
+  "per": [
+    {
+      "si": 0,
+      "rsa_imp": 0.6453055826433889,
+      "rsa_nat": 0.39488849087132755,
+      "crossings": 0,
+      "acc_imp": 0.989010989010989,
+      "acc_nat_revert": 0.0,
+      "na": 0.0,
+      "mean_ntok": 2.0,
+      "frac_bare": 1.0
+    },
+    {
+      "si": 1,
+      "rsa_imp": 0.39488849087132755,
+      "rsa_nat": 0.1541028257058839,
+      "crossings": 3,
+      "acc_imp": 0.8351648351648352,
+      "acc_nat_revert": 0.054945054945054944,
+      "na": 0.0,
+      "mean_ntok": 2.0,
+      "frac_bare": 1.0
+    },
+    {
+      "si": 2,
+      "rsa_imp": 0.3082056514117678,
+      "rsa_nat": 0.5586227431838292,
+      "crossings": 1,
+      "acc_imp": 0.9340659340659341,
+      "acc_nat_revert": 0.06593406593406594,
+      "na": 0.0,
+      "mean_ntok": 2.0,
+      "frac_bare": 1.0
+    }
+  ],
+  "rsa_imp": 0.44946657497549475,
+  "rsa_nat": 0.36920468658701355,
+  "crossings": 1.3333333333333333,
+  "acc_imp": 0.9194139194139194,
+  "acc_nat_revert": 0.040293040293040296,
+  "na": 0.0,
+  "mean_ntok": 2.0,
+  "frac_bare": 1.0
+}

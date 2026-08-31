@@ -1,0 +1,51 @@
+{
+  "model": "meta-llama/Llama-3.1-8B-Instruct",
+  "mode": "list",
+  "base": false,
+  "nscr": 3,
+  "ntpl": 13,
+  "L": 24,
+  "per": [
+    {
+      "si": 0,
+      "rsa_imp": 0.21189138534559038,
+      "rsa_nat": 0.5200970367573582,
+      "crossings": 1,
+      "acc_imp": 0.31868131868131866,
+      "acc_nat_revert": 0.4725274725274725,
+      "na": 0.0,
+      "mean_ntok": 1.0,
+      "frac_bare": 1.0
+    },
+    {
+      "si": 1,
+      "rsa_imp": -0.009631426606617744,
+      "rsa_nat": 0.5971484496103002,
+      "crossings": 4,
+      "acc_imp": 0.14285714285714285,
+      "acc_nat_revert": 0.5714285714285714,
+      "na": 0.0,
+      "mean_ntok": 1.0,
+      "frac_bare": 1.0
+    },
+    {
+      "si": 2,
+      "rsa_imp": -0.3563627844448566,
+      "rsa_nat": 0.7801455551360372,
+      "crossings": 3,
+      "acc_imp": 0.3076923076923077,
+      "acc_nat_revert": 0.5274725274725275,
+      "na": 0.0,
+      "mean_ntok": 1.0,
+      "frac_bare": 1.0
+    }
+  ],
+  "rsa_imp": -0.05136760856862799,
+  "rsa_nat": 0.6324636805012319,
+  "crossings": 2.6666666666666665,
+  "acc_imp": 0.2564102564102564,
+  "acc_nat_revert": 0.5238095238095237,
+  "na": 0.0,
+  "mean_ntok": 1.0,
+  "frac_bare": 1.0
+}

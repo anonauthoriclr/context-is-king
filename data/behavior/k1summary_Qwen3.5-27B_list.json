@@ -1,0 +1,51 @@
+{
+  "model": "Qwen/Qwen3.5-27B",
+  "mode": "list",
+  "base": false,
+  "nscr": 3,
+  "ntpl": 13,
+  "L": 48,
+  "per": [
+    {
+      "si": 0,
+      "rsa_imp": 0.7223569954963308,
+      "rsa_nat": 0.2215228119522081,
+      "crossings": 1,
+      "acc_imp": 1.0,
+      "acc_nat_revert": 0.0,
+      "na": 0.0,
+      "mean_ntok": 1.0,
+      "frac_bare": 1.0
+    },
+    {
+      "si": 1,
+      "rsa_imp": 0.7127255688897132,
+      "rsa_nat": -0.18299710552573714,
+      "crossings": 0,
+      "acc_imp": 1.0,
+      "acc_nat_revert": 0.0,
+      "na": 0.0,
+      "mean_ntok": 1.0,
+      "frac_bare": 1.0
+    },
+    {
+      "si": 2,
+      "rsa_imp": 0.7223569954963308,
+      "rsa_nat": 0.21189138534559038,
+      "crossings": 0,
+      "acc_imp": 1.0,
+      "acc_nat_revert": 0.0,
+      "na": 0.0,
+      "mean_ntok": 1.0,
+      "frac_bare": 1.0
+    }
+  ],
+  "rsa_imp": 0.7191465199607916,
+  "rsa_nat": 0.08347236392402045,
+  "crossings": 0.3333333333333333,
+  "acc_imp": 1.0,
+  "acc_nat_revert": 0.0,
+  "na": 0.0,
+  "mean_ntok": 1.0,
+  "frac_bare": 1.0
+}

@@ -1,0 +1,16 @@
+# Extraction layer (GPU).
+# Only needed to REGENERATE the cached activations in data/ from model weights.
+# Gemma-4 loading is version-sensitive, so the paper used two environments:
+#
+#   * Qwen-3.5 (4B/9B/27B), Gemma-4-31B-it, Llama-3.1-8B-Instruct
+#       -> transformers==5.5.3        (paper's "gemma4-venv")
+#   * Gemma-4 unified checkpoints E2B / E4B / 12B  (model_type=gemma4_unified)
+#       -> transformers==5.12.1       (paper's "gemma4u-venv"); 5.5.3 cannot load them
+#
+# Install into two separate venvs if you need the full model ladder.
+torch>=2.4
+transformers==5.5.3      # use 5.12.1 for the Gemma-4 unified E2B/E4B/12B checkpoints
+accelerate
+numpy>=1.24
+scipy>=1.10
+scikit-learn>=1.3

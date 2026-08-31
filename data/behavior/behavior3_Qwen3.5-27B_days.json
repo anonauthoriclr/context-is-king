@@ -1,0 +1,139 @@
+{
+  "model": "Qwen/Qwen3.5-27B",
+  "concept": "days",
+  "si": 0,
+  "regimes": {
+    "direct": {
+      "acc_imp": 0.44047619047619047,
+      "acc_nat_revert": 0.08333333333333333,
+      "na_rate": 0.0,
+      "kcurve_imp": {
+        "1": 1.0,
+        "2": 0.5714285714285714,
+        "3": 0.42857142857142855,
+        "4": 0.2857142857142857,
+        "5": 0.21428571428571427,
+        "6": 0.14285714285714285
+      },
+      "trunc_rate": 0.0,
+      "maxnew": 16,
+      "samples": [
+        {
+          "q": [
+            "Monday",
+            1,
+            0
+          ],
+          "ans": "Tuesday",
+          "tail": "Tuesday"
+        },
+        {
+          "q": [
+            "Monday",
+            1,
+            1
+          ],
+          "ans": "Tuesday",
+          "tail": "Tuesday"
+        },
+        {
+          "q": [
+            "Monday",
+            2,
+            0
+          ],
+          "ans": "Tuesday",
+          "tail": "Tuesday"
+        }
+      ]
+    },
+    "scripted": {
+      "acc_imp": 0.9880952380952381,
+      "acc_nat_revert": 0.0,
+      "na_rate": 0.0,
+      "kcurve_imp": {
+        "1": 1.0,
+        "2": 1.0,
+        "3": 1.0,
+        "4": 1.0,
+        "5": 1.0,
+        "6": 0.9285714285714286
+      },
+      "trunc_rate": 0.0,
+      "maxnew": 2048,
+      "samples": [
+        {
+          "q": [
+            "Monday",
+            1,
+            0
+          ],
+          "ans": "Tuesday",
+          "tail": "ng forward 1 step from Position 5 takes us to **Position 6**.\n\n**Step 3:** Identify the day at Position 6.\nThe day at Position 6 is **Tuesday**.\n\nFINAL: Tuesday"
+        },
+        {
+          "q": [
+            "Monday",
+            1,
+            1
+          ],
+          "ans": "Tuesday",
+          "tail": "step: $5 + 1 = 6$.\n\n3.  **Identify the destination**:\n    *   Look at **Position 6** in the list.\n    *   Position 6 corresponds to **Tuesday**.\n\nFINAL: Tuesday"
+        },
+        {
+          "q": [
+            "Monday",
+            2,
+            0
+          ],
+          "ans": "Wednesday",
+          "tail": "ng forward wraps around to the beginning of the list (Position 0).\nPosition 0 is **Wednesday**.\n\nTherefore, 2 steps after Monday is Wednesday.\n\nFINAL: Wednesday"
+        }
+      ]
+    },
+    "natural": {
+      "acc_imp": 0.8928571428571429,
+      "acc_nat_revert": 0.0,
+      "na_rate": 0.0,
+      "kcurve_imp": {
+        "1": 1.0,
+        "2": 0.9285714285714286,
+        "3": 0.8571428571428571,
+        "4": 0.8571428571428571,
+        "5": 0.9285714285714286,
+        "6": 0.7857142857142857
+      },
+      "trunc_rate": 0.8095238095238095,
+      "maxnew": 2048,
+      "samples": [
+        {
+          "q": [
+            "Monday",
+            1,
+            0
+          ],
+          "ans": "Tuesday",
+          "tail": "he first item is position 0:\n*   Monday is at position 5.\n*   1 step after Monday is position 5 + 1 = 6.\n*   The item at position 6 is **Tuesday**.\n\n**Tuesday**"
+        },
+        {
+          "q": [
+            "Monday",
+            1,
+            1
+          ],
+          "ans": "Tuesday",
+          "tail": "ition 5)\n7.  **Tuesday** (Position 6)\n\nStarting at **Monday** (Position 5) and advancing **1 step** leads to Position 6.\n\nThe item at Position 6 is **Tuesday**."
+        },
+        {
+          "q": [
+            "Monday",
+            2,
+            0
+          ],
+          "ans": "Wednesday",
+          "tail": " Move to the next day, which is **Tuesday**.\n3.  Step 2: Move to the next day (wrapping around to the start of the list), which is **Wednesday**.\n\n**Wednesday**"
+        }
+      ]
+    }
+  }
+}

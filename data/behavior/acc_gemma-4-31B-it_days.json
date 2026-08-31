@@ -1,0 +1,301 @@
+{
+  "model": "google/gemma-4-31B-it",
+  "concept": "days",
+  "base": false,
+  "nscr": 2,
+  "maxnew": 64,
+  "res": {
+    "natural_ceiling": {
+      "acc_imp": 0.996031746031746,
+      "acc_nat_revert": 0.0,
+      "na_rate": 0.0,
+      "kcurve_imp": {
+        "1": 0.9761904761904762,
+        "2": 1.0,
+        "3": 1.0,
+        "4": 1.0,
+        "5": 1.0,
+        "6": 1.0
+      },
+      "trunc": 0,
+      "samples": [
+        {
+          "q": [
+            "Monday",
+            1,
+            0
+          ],
+          "gen": "Tuesday",
+          "parsed": "Tuesday"
+        },
+        {
+          "q": [
+            "Monday",
+            1,
+            1
+          ],
+          "gen": "Tuesday",
+          "parsed": "Tuesday"
+        },
+        {
+          "q": [
+            "Monday",
+            1,
+            2
+          ],
+          "gen": "Tuesday",
+          "parsed": "Tuesday"
+        },
+        {
+          "q": [
+            "Monday",
+            1,
+            3
+          ],
+          "gen": "Tuesday",
+          "parsed": "Tuesday"
+        }
+      ]
+    },
+    "list": {
+      "acc_imp": 0.5833333333333333,
+      "acc_imp_std": 0.019841269841269826,
+      "acc_nat_revert": 0.10912698412698413,
+      "na_rate": 0.0,
+      "kcurve_imp": {
+        "1": 1.0,
+        "2": 0.9047619047619048,
+        "3": 0.4642857142857143,
+        "4": 0.5,
+        "5": 0.41666666666666663,
+        "6": 0.21428571428571427
+      },
+      "per": [
+        {
+          "acc_imp": 0.6031746031746031,
+          "acc_nat_revert": 0.10714285714285714,
+          "na_rate": 0.0,
+          "kcurve_imp": {
+            "1": 1.0,
+            "2": 0.9047619047619048,
+            "3": 0.5238095238095238,
+            "4": 0.5,
+            "5": 0.47619047619047616,
+            "6": 0.21428571428571427
+          },
+          "trunc": 0,
+          "samples": [
+            {
+              "q": [
+                "Monday",
+                1,
+                0
+              ],
+              "gen": "Tuesday",
+              "parsed": "Tuesday"
+            },
+            {
+              "q": [
+                "Monday",
+                1,
+                1
+              ],
+              "gen": "Tuesday",
+              "parsed": "Tuesday"
+            },
+            {
+              "q": [
+                "Monday",
+                1,
+                2
+              ],
+              "gen": "Tuesday",
+              "parsed": "Tuesday"
+            },
+            {
+              "q": [
+                "Monday",
+                1,
+                3
+              ],
+              "gen": "Tuesday",
+              "parsed": "Tuesday"
+            }
+          ]
+        },
+        {
+          "acc_imp": 0.5634920634920635,
+          "acc_nat_revert": 0.1111111111111111,
+          "na_rate": 0.0,
+          "kcurve_imp": {
+            "1": 1.0,
+            "2": 0.9047619047619048,
+            "3": 0.40476190476190477,
+            "4": 0.5,
+            "5": 0.35714285714285715,
+            "6": 0.21428571428571427
+          },
+          "trunc": 0,
+          "samples": [
+            {
+              "q": [
+                "Monday",
+                1,
+                0
+              ],
+              "gen": "Thursday",
+              "parsed": "Thursday"
+            },
+            {
+              "q": [
+                "Monday",
+                1,
+                1
+              ],
+              "gen": "Thursday",
+              "parsed": "Thursday"
+            },
+            {
+              "q": [
+                "Monday",
+                1,
+                2
+              ],
+              "gen": "Thursday",
+              "parsed": "Thursday"
+            },
+            {
+              "q": [
+                "Monday",
+                1,
+                3
+              ],
+              "gen": "Thursday",
+              "parsed": "Thursday"
+            }
+          ]
+        }
+      ]
+    },
+    "adj": {
+      "acc_imp": 0.4861111111111111,
+      "acc_imp_std": 0.01785714285714285,
+      "acc_nat_revert": 0.12896825396825395,
+      "na_rate": 0.0,
+      "kcurve_imp": {
+        "1": 1.0,
+        "2": 0.9880952380952381,
+        "3": 0.38095238095238093,
+        "4": 0.11904761904761904,
+        "5": 0.2738095238095238,
+        "6": 0.15476190476190477
+      },
+      "per": [
+        {
+          "acc_imp": 0.503968253968254,
+          "acc_nat_revert": 0.1626984126984127,
+          "na_rate": 0.0,
+          "kcurve_imp": {
+            "1": 1.0,
+            "2": 0.9761904761904762,
+            "3": 0.42857142857142855,
+            "4": 0.23809523809523808,
+            "5": 0.21428571428571427,
+            "6": 0.16666666666666666
+          },
+          "trunc": 0,
+          "samples": [
+            {
+              "q": [
+                "Monday",
+                1,
+                0
+              ],
+              "gen": "Tuesday",
+              "parsed": "Tuesday"
+            },
+            {
+              "q": [
+                "Monday",
+                1,
+                1
+              ],
+              "gen": "Tuesday",
+              "parsed": "Tuesday"
+            },
+            {
+              "q": [
+                "Monday",
+                1,
+                2
+              ],
+              "gen": "Tuesday",
+              "parsed": "Tuesday"
+            },
+            {
+              "q": [
+                "Monday",
+                1,
+                3
+              ],
+              "gen": "Tuesday",
+              "parsed": "Tuesday"
+            }
+          ]
+        },
+        {
+          "acc_imp": 0.46825396825396826,
+          "acc_nat_revert": 0.09523809523809523,
+          "na_rate": 0.0,
+          "kcurve_imp": {
+            "1": 1.0,
+            "2": 1.0,
+            "3": 0.3333333333333333,
+            "4": 0.0,
+            "5": 0.3333333333333333,
+            "6": 0.14285714285714285
+          },
+          "trunc": 0,
+          "samples": [
+            {
+              "q": [
+                "Monday",
+                1,
+                0
+              ],
+              "gen": "Thursday",
+              "parsed": "Thursday"
+            },
+            {
+              "q": [
+                "Monday",
+                1,
+                1
+              ],
+              "gen": "Thursday",
+              "parsed": "Thursday"
+            },
+            {
+              "q": [
+                "Monday",
+                1,
+                2
+              ],
+              "gen": "Thursday",
+              "parsed": "Thursday"
+            },
+            {
+              "q": [
+                "Monday",
+                1,
+                3
+              ],
+              "gen": "Thursday",
+              "parsed": "Thursday"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

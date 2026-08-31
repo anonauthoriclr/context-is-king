@@ -1,0 +1,16 @@
+# All cached artifacts (JSON + .npz) are committed so the repo is self-contained:
+# `git clone` -> figures and tables reproduce with no external download.
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+
+# Figure outputs (regenerated from data/)
+figures/output/
+figures/*.png
+figures/*.pdf
+data/**/*.png
+data/**/*.pdf
+*.tmp

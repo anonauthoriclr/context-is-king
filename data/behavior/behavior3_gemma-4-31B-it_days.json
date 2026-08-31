@@ -1,0 +1,139 @@
+{
+  "model": "google/gemma-4-31B-it",
+  "concept": "days",
+  "si": 0,
+  "regimes": {
+    "direct": {
+      "acc_imp": 0.5714285714285714,
+      "acc_nat_revert": 0.14285714285714285,
+      "na_rate": 0.0,
+      "kcurve_imp": {
+        "1": 1.0,
+        "2": 0.9285714285714286,
+        "3": 0.5,
+        "4": 0.42857142857142855,
+        "5": 0.42857142857142855,
+        "6": 0.14285714285714285
+      },
+      "trunc_rate": 0.0,
+      "maxnew": 16,
+      "samples": [
+        {
+          "q": [
+            "Monday",
+            1,
+            0
+          ],
+          "ans": "Tuesday",
+          "tail": "Tuesday"
+        },
+        {
+          "q": [
+            "Monday",
+            1,
+            1
+          ],
+          "ans": "Tuesday",
+          "tail": "Tuesday"
+        },
+        {
+          "q": [
+            "Monday",
+            2,
+            0
+          ],
+          "ans": "Wednesday",
+          "tail": "Wednesday"
+        }
+      ]
+    },
+    "scripted": {
+      "acc_imp": 1.0,
+      "acc_nat_revert": 0.0,
+      "na_rate": 0.0,
+      "kcurve_imp": {
+        "1": 1.0,
+        "2": 1.0,
+        "3": 1.0,
+        "4": 1.0,
+        "5": 1.0,
+        "6": 1.0
+      },
+      "trunc_rate": 0.0,
+      "maxnew": 2048,
+      "samples": [
+        {
+          "q": [
+            "Monday",
+            1,
+            0
+          ],
+          "ans": "Tuesday",
+          "tail": "nday is at position 5.\n\n2. Move 1 step forward from position 5:\n   - 5 + 1 = 6.\n\n3. Identify the item at position 6:\n   - Position 6 is Tuesday.\n\nFINAL: Tuesday"
+        },
+        {
+          "q": [
+            "Monday",
+            1,
+            1
+          ],
+          "ans": "Tuesday",
+          "tail": "\n   - Tuesday (6)\n3. Monday is at position 5.\n4. Advance 1 step forward from position 5: 5 + 1 = 6.\n5. Identify the item at position 6: Tuesday.\n\nFINAL: Tuesday"
+        },
+        {
+          "q": [
+            "Monday",
+            2,
+            0
+          ],
+          "ans": "Wednesday",
+          "tail": ":\n   - Since the list has 7 items (0-6), moving forward from position 6 wraps back to the start.\n   - Position 6 + 1 = Position 0 (Wednesday).\n\nFINAL: Wednesday"
+        }
+      ]
+    },
+    "natural": {
+      "acc_imp": 1.0,
+      "acc_nat_revert": 0.0,
+      "na_rate": 0.0,
+      "kcurve_imp": {
+        "1": 1.0,
+        "2": 1.0,
+        "3": 1.0,
+        "4": 1.0,
+        "5": 1.0,
+        "6": 1.0
+      },
+      "trunc_rate": 0.0,
+      "maxnew": 2048,
+      "samples": [
+        {
+          "q": [
+            "Monday",
+            1,
+            0
+          ],
+          "ans": "Tuesday",
+          "tail": "5. Saturday\n6. Monday\n7. Tuesday\n\nMonday is the 6th item in the sequence. Moving 1 step forward from Monday leads to the 7th item.\n\nThe 7th item is **Tuesday**."
+        },
+        {
+          "q": [
+            "Monday",
+            1,
+            1
+          ],
+          "ans": "Tuesday",
+          "tail": "fined calendar:\n\n1. Wednesday\n2. Friday\n3. Thursday\n4. Sunday\n5. Saturday\n6. **Monday** (Starting point)\n7. **Tuesday** (1 step after)\n\nThe item is **Tuesday**."
+        },
+        {
+          "q": [
+            "Monday",
+            2,
+            0
+          ],
+          "ans": "Wednesday",
+          "tail": "\n3. Thursday\n4. Sunday\n5. Saturday\n6. Monday\n7. Tuesday\n\nTo find 2 steps after Monday:\nStep 1: Tuesday\nStep 2: Wednesday\n\n2 steps after Monday is **Wednesday**."
+        }
+      ]
+    }
+  }
+}
