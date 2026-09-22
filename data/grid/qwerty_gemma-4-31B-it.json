@@ -1,0 +1,26 @@
+{
+  "model": "google/gemma-4-31B-it",
+  "L": 45,
+  "keys": [
+    "Q",
+    "W",
+    "E",
+    "A",
+    "S",
+    "D",
+    "Z",
+    "X",
+    "C"
+  ],
+  "rsa": {
+    "kbd_cheb": 0.17219904080020204,
+    "kbd_manh": 0.41522593705907634,
+    "read_1d": 0.2905686862928815,
+    "alpha_1d": 0.40421274815237845
+  },
+  "best": "kbd_manh",
+  "dRSA_kbd_minus_read": 0.12465725076619483,
+  "dRSA_kbd_minus_alpha": 0.01101318890669789,
+  "p_emp_kbd": 0.01199400299850075,
+  "p_metric": "kbd_manh"
+}

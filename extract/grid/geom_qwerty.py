@@ -41,16 +41,17 @@ def main():
     C=np.stack([np.mean(ent[k],0) for k in KEYS]); obs=cos_rdm(C)
     tu=np.triu_indices(N,1)
     rsa={n:float(spearmanr(obs,T[tu]).correlation) for n,T in TPL.items()}
-    rng=np.random.default_rng(7);base=cheb();nv=[]
+    rng=np.random.default_rng(7);base=manh();nv=[]
     for _ in range(2000):
         pn=list(rng.permutation(range(N)));nv.append(spearmanr(obs,np.array([[base[pn[i],pn[j]] for j in range(N)] for i in range(N)])[tu]).correlation)
-    nv=np.array(nv);p=float((np.sum(nv>=rsa["kbd_cheb"])+1)/2001);best=max(TPL,key=lambda n:rsa[n])
+    nv=np.array(nv);p=float((np.sum(nv>=rsa["kbd_manh"])+1)/2001);best=max(TPL,key=lambda n:rsa[n])
     del model;torch.cuda.empty_cache()
     out=dict(model=MODEL,L=int(L),keys=KEYS,rsa=rsa,best=best,
-             dRSA_kbd_minus_read=rsa["kbd_cheb"]-rsa["read_1d"],dRSA_kbd_minus_alpha=rsa["kbd_cheb"]-rsa["alpha_1d"],p_emp_kbd=p)
+             dRSA_kbd_minus_read=rsa["kbd_manh"]-rsa["read_1d"],dRSA_kbd_minus_alpha=rsa["kbd_manh"]-rsa["alpha_1d"],
+             p_metric="kbd_manh",p_emp_kbd=p)
     json.dump(out,open(f"results/geometry/qwerty_{tag}.json","w"),indent=2)
     np.savez(f"results/geometry/qwerty_{tag}.npz",cents=C,keys=np.array(KEYS),coord=np.array([COORD[k] for k in KEYS]),L=L)
     print(f"== {tag}: kbd_cheb={rsa['kbd_cheb']:+.2f} kbd_manh={rsa['kbd_manh']:+.2f} read_1d={rsa['read_1d']:+.2f} "
-          f"alpha_1d={rsa['alpha_1d']:+.2f} | best={best} dRSA(kbd-read)={rsa['kbd_cheb']-rsa['read_1d']:+.2f} "
-          f"dRSA(kbd-alpha)={rsa['kbd_cheb']-rsa['alpha_1d']:+.2f} p_kbd={p:.3f}",flush=True)
+          f"alpha_1d={rsa['alpha_1d']:+.2f} | best={best} dRSA(kbd-read)={rsa['kbd_manh']-rsa['read_1d']:+.2f} "
+          f"dRSA(kbd-alpha)={rsa['kbd_manh']-rsa['alpha_1d']:+.2f} p_kbd_manh={p:.3f}",flush=True)
 if __name__=="__main__": main()

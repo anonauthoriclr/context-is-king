@@ -1,0 +1,67 @@
+{
+  "model": "Qwen/Qwen3.5-27B",
+  "L": 48,
+  "nscr": 6,
+  "keys": [
+    "Q",
+    "W",
+    "E",
+    "A",
+    "S",
+    "D",
+    "Z",
+    "X",
+    "C"
+  ],
+  "spec_example": "You are operating on a REDEFINED keyboard. The ONLY valid 'right of' / 'below' relations apply below; the normal QWERTY layout does NOT apply.\nRelations:\n- Q is immediately right of X.\n- X is immediately below Z.\n- Q is immediately below A.\n- W is immediately below C.\n- Z is immediately below S.\n- A is immediately below D.\n- A is immediately right of Z.\n- C is immediately right of A.\n- E is immediately right of D.\n- D is immediately right of S.\n- C is immediately below E.\n- W is immediately right of Q.",
+  "per": [
+    {
+      "si": 0,
+      "imp": 0.8160210710597061,
+      "nat": 0.2096550633019599,
+      "dom": 0.6063660077577462,
+      "p": 0.0004997501249375312
+    },
+    {
+      "si": 1,
+      "imp": 0.7904268165786877,
+      "nat": -0.2298037317231872,
+      "dom": 1.020230548301875,
+      "p": 0.0004997501249375312
+    },
+    {
+      "si": 2,
+      "imp": 0.7844366719129175,
+      "nat": -0.1971302153644402,
+      "dom": 0.9815668872773577,
+      "p": 0.0004997501249375312
+    },
+    {
+      "si": 3,
+      "imp": 0.7659216793096275,
+      "nat": 0.009802054907624097,
+      "dom": 0.7561196244020034,
+      "p": 0.0004997501249375312
+    },
+    {
+      "si": 4,
+      "imp": 0.73352044225387,
+      "nat": 0.35151258015951975,
+      "dom": 0.3820078620943503,
+      "p": 0.0004997501249375312
+    },
+    {
+      "si": 5,
+      "imp": 0.7912436544876564,
+      "nat": 0.38745344815414146,
+      "dom": 0.403790206333515,
+      "p": 0.0004997501249375312
+    }
+  ],
+  "rsa_imposed": 0.7802617226004108,
+  "rsa_imposed_std": 0.025529320716821763,
+  "rsa_natural": 0.08858153323926964,
+  "dominance": 0.6916801893611413,
+  "n_imp_beats_nat": 6,
+  "nsig": 6
+}

@@ -1,8 +1,8 @@
 # SPEC — Accuracy phase: does the imposed GEOMETRY track BEHAVIOR? (geometry↔function link)
 
-> **Status: DRAFT @ Gate 1 (methods agreement). Nothing runs until operator sign-off.**
-> Author: orchestrator, 2026-06-18. Phase 2 of the def-ladder × scale program (Phase 1 geometry = F43).
-> Pairs cell-for-cell with F43 so every accuracy number sits next to its imposed-RSA / crossings.
+> Historical experiment specification, dated 2026-06-18 and retained for
+> methodological provenance. It pairs behavior with the corresponding geometry
+> condition so each accuracy estimate can be compared with its imposed RSA.
 
 ## 1. Question
 
@@ -39,7 +39,7 @@ decoupling, now tested *within* instruct models)?
      residual is the precursor of this answer (same forward pass). Paired cell-for-cell with RSA.
   2. **natural one-shot (baseline ceiling).** Same prompt, natural order, no redefinition — can the model one-shot a
      walk at all (separates non-override from non-competence). Same regime ⇒ valid comparison.
-- **Free-generation, not truncation** (operator point): do NOT cap at ~12 tokens — let it generate and robustly parse
+- **Free-generation, not truncation:** do NOT cap at ~12 tokens — let it generate and robustly parse
   the answer (avoids truncation artifacts). Under the one-shot prompt the model answers immediately anyway, so this is
   purely a parsing-robustness upgrade, still one-shot.
 - **Robust parse, deterministic-first:** scan for the entity name from the concept set (case-insensitive,
@@ -101,5 +101,5 @@ decoupling, now tested *within* instruct models)?
   per-k accuracy + natural-revert + NA-rate) and the natural-task ceiling.
 - Combine script → `FIG_geom_vs_acc_<concept>.png`: (a) RSA-vs-accuracy scatter (cells labeled, decoupled cells
   highlighted); (b) k-curves per model×mode; (c) imposed-acc vs scale overlaid on the F43 RSA-vs-scale panel.
-- Orchestrator `sweep_acc.sh <concept>` mirroring `sweep_geom.sh` (large→small order, file-based skip).
+- Batch launcher `sweep_acc.sh <concept>` mirroring `sweep_geom.sh` (large→small order, file-based skip).
 - Findings entry on completion → Gate 2 before doctrine.

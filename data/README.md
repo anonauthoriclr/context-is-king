@@ -40,9 +40,18 @@ data/
 ├── shapes/                   # exp03: same 7 weekdays as ring/line/tree
 │   ├── shape_v4cent_<tag>.npz        -> fig_shapes
 │   └── shape_v4_<tag>.json           -> tab:shapes (imposed rows)
+├── grid/                     # compact Appendix J 2-D grid summaries
+│   ├── qwerty_<tag>.json             # native QWERTY geometry
+│   ├── qwertyimposed_<tag>.json      # imposed-vs-native QWERTY
+│   └── grid_gemma-4-31B-it_sep.json  # arbitrary-token 3x3 grid
 ├── table_summaries.json      # compact outputs for tab:robust and tab:proj
 └── soundness_ci.md           # per-scramble confidence intervals (appendix)
 ```
+
+The flagship Qwen direct-patching cache, `causal/causaluse_Qwen3.5-27B.json`,
+contains 20 imposed orders and two repetitions of the fixed natural-order
+control. The corresponding Gemma-31B cache contains 20 imposed orders and six
+natural-control repetitions.
 
 `ARTIFACT_MAP.md` (repo root) has the full paper-object -> figure-script ->
 data-artifact -> extraction-script mapping.

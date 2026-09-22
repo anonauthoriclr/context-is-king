@@ -65,7 +65,7 @@ Gemma-4-31B needs a large-memory GPU (bf16).
 
 ```bash
 # a single model / concept
-python extract/geometry/multiscr.py Qwen/Qwen3.5-27B --concepts days,months
+python extract/geometry/multiscr.py Qwen/Qwen3.5-27B --concepts days,months --noexamples
 
 # causal patching on Gemma-4-31B
 python extract/causal/causal_use.py google/gemma-4-31B-it --nscr 20

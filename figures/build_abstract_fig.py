@@ -36,7 +36,7 @@ def pca3(C):
     explained=float(np.sum(S[:3]**2)/np.sum(S**2))
     return P,explained
 def selected_view(P):
-    # Operator-selected Plotly orthographic camera for the no-rule panel.
+    # Fixed Plotly orthographic camera for the no-rule panel.
     normal=np.array([-1.5031443083843847,1.7796085167477549,0.31788475158535817])
     normal=normal/np.linalg.norm(normal); up0=np.array([0.,0.,1.])
     right=np.cross(up0,normal); right=right/np.linalg.norm(right)

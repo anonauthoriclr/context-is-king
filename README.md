@@ -3,10 +3,12 @@
 Code and cached data to reproduce *"Context Is King: How In-Context Specification
 Shapes the Geometry of Concepts."*
 
-The paper's finding: the relational geometry a language model **uses** over a set
-of concepts — down to its topology type (a cycle vs. a tree) — is set by the
-in-context specification. It overrides the pretrained prior on conflict, is
-causally used (activation patching), and its clean use is gated by scale.
+The paper finds that relational geometry at the final pre-generation state
+follows the in-context specification, including whether the same entities form
+a cycle or hierarchy. Under conflict, this downstream geometry dominates the
+pretrained prior in capable models. Activation patching separately localizes
+the context-dependent binding of entity identity to the specified relation,
+whose clean operation strengthens with scale.
 
 <p align="center">
   <img src="assets/shapes_rotating.gif" alt="The same seven weekdays rendered as a ring, a cycle, and a tree by the in-context specification alone" width="100%">
@@ -69,7 +71,7 @@ loading is `transformers`-version-sensitive; details there), then invoke the
 relevant extraction script directly, e.g.:
 
 ```bash
-python extract/geometry/multiscr.py google/gemma-4-31B-it --concepts days,months --nscr 10
+python extract/geometry/multiscr.py google/gemma-4-31B-it --concepts days,months --nscr 10 --noexamples
 python extract/causal/causal_use.py google/gemma-4-31B-it --nscr 20
 ```
 
@@ -82,8 +84,7 @@ documented interface is the individual extraction script.
 ## Models
 
 Instruction-tuned `google/gemma-4-{E2B,E4B,12B,31B}-it`,
-`Qwen/Qwen3.5-{4B,9B,27B}`, and `meta-llama/Llama-3.1-8B-Instruct` (plus base
-variants for the base-model claim).
+`Qwen/Qwen3.5-{4B,9B,27B}`, and `meta-llama/Llama-3.1-8B-Instruct`.
 
 ## Citation
 

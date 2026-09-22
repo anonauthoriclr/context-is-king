@@ -1,6 +1,6 @@
 #!/bin/bash
 # After step A (Gemma-31B CoT) frees the GPU: Gemma-12B entity patch (snap+CoT, gemma4u-venv, gemma4_unified arch)
-# + k-patch all-pairs on Gemma-31B (gemma4-venv). File-skip/resumable. Qwen deferred (per operator).
+# + k-patch all-pairs on Gemma-31B (gemma4-venv). File-skip/resumable. Qwen deferred.
 cd "${ROOT:?Set ROOT to the extraction working directory}"
 VU="${VENV_UNIFIED:?Set VENV_UNIFIED to the unified-model virtual-environment directory}"   # tf5.12.1, loads gemma4_unified (12B)
 V="${VENV:?Set VENV to the virtual-environment directory}"      # tf5.5.3, loads gemma4 (31B) + qwen3_5

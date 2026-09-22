@@ -1,10 +1,9 @@
 # SPEC — Metric vs Lookup: is the context-imposed ring a genuine metric manifold?
 
-> **Status: DRAFT @ Gate 1 (methods agreement). Nothing runs until operator sign-off.**
-> Author: orchestrator, 2026-06-17. Reuses `multiscr.py` capture + `cos_rdm`/`cyc_rdm`.
-> Climbs the claims ladder one rung on H0.3 (anti-circularity / metric) — *characterize*
-> the representational mechanism, not "invert Park." See `docs/03` H0.3 (currently PARTIAL:
-> the held-out-pairs interpolation test "was not run cleanly").
+> Historical experiment specification, dated 2026-06-17 and retained for
+> methodological provenance. It reuses the `multiscr.py` capture and
+> `cos_rdm`/`cyc_rdm` analyses to characterize metric structure rather than
+> infer it from a cyclic RSA alone.
 
 ## 1. Question
 
@@ -146,7 +145,7 @@ the classification per family (the H2 test). Pre-commit:
 - Extend `multiscr.py` (or a sibling `metric_lookup.py`) with: `d_lin` template; M1 (far-Spearman
   + per-bin profile); M2 (dRSA + CIs); M3 (LOO-MDS circular-corr + perm null); the 4 controls.
 - Cache centroids to `.npz` per (model, concept, order, L); analysis reads from cache.
-- Unbuffered per-scramble progress (operator standard).
+- Unbuffered per-scramble progress.
 - Figures: (a) cosine-distance vs d_cyc bin staircase per cell; (b) regime-by-scale grid
   (Lookup/Horseshoe/Metric) per family; (c) LOO interpolation recovery scatter (recovered vs
   true position) for one primary cell. Findings entry on completion → Gate 2 before doctrine.

@@ -1,9 +1,9 @@
 # SPEC — CoT regime: does reasoning traverse the imposed ring? (+ flag-invariance of the geometry)
 
-> **Status: DRAFT @ Gate 1 (methods agreement). Nothing runs until operator sign-off.**
-> Author: orchestrator, 2026-06-18. Motivated by F44 (one-shot can't traverse the imposed metric ring its
-> representation composed). Built on docs/03 **Standard #10**: a different regime (reasoning on) may route through
-> different circuits — re-capture geometry under the CoT prompt and verify before pairing CoT-geometry with CoT-behavior.
+> Historical experiment specification, dated 2026-06-18 and retained for
+> methodological provenance. A different regime may route through different
+> circuits, so geometry must be recaptured under the reasoning prompt before it
+> is paired with reasoning behavior.
 
 ## 1. Question
 

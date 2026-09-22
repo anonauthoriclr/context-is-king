@@ -6,6 +6,7 @@ redefinition: (query) k-step questions about the natural days, matched to the ma
 Reports cyclic RSA + permutation-null p + participation-ratio effective dim, at BOTH sentence-end and day-token, and
 saves centroids + a PCA ring plot. Forward-only. Usage: python -u natural_sentend.py <hf_model>"""
 import os, sys, json, numpy as np, torch
+from itertools import permutations
 from scipy.stats import spearmanr
 from transformers import AutoTokenizer, AutoModelForCausalLM, AutoConfig
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
@@ -13,8 +14,10 @@ import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
 MODEL = sys.argv[1]; FRACD = 0.75
 base = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]; N = 7
 KS = [1,2,3,4,5,6]
-QUERY   = ["What is {k} steps after {e}?", "From {e}, advance {k} steps. Which item?",
-           "Starting at {e}, move {k} steps forward. Result?", "{e} plus {k} steps =?"]
+QUERY   = ["What is {k} steps after {e}?", "{k} steps after {e} is?",
+           "From {e}, advance {k} steps. Which item?",
+           "Starting at {e}, move {k} steps forward. Result?", "{e} plus {k} steps =?",
+           "Advance {k} from {e}. Which one?"]
 NEUTRAL = ["Consider the day {e}.", "The day under discussion is {e}.",
            "Tell me about the day {e}.", "Here is a day: {e}."]
 
@@ -27,10 +30,12 @@ ut = lambda M: M[np.triu_indices(N,1)]
 def eff_dim(c):
     X = c - c.mean(0); l = np.linalg.svd(X, compute_uv=False)**2
     return float((l.sum()**2)/(np.sum(l**2)+1e-12))
-def last_end(ids, sub):
-    Ls = len(sub); best = None
-    for i in range(len(ids)-Ls+1):
-        if ids[i:i+Ls] == sub: best = i+Ls-1
+def last_end(ids, candidates):
+    best = None
+    for sub in candidates:
+        Ls = len(sub)
+        for i in range(len(ids)-Ls+1):
+            if ids[i:i+Ls] == sub: best = i+Ls-1
     return best
 
 def main():
@@ -40,38 +45,67 @@ def main():
     L = int(round(FRACD*nl)); print(f"NAT-SENTEND {MODEL} L={L}/{nl}", flush=True)
     tok = AutoTokenizer.from_pretrained(MODEL); tok.padding_side = "left"
     if tok.pad_token is None: tok.pad_token = tok.eos_token
-    dayids = {e:(tok.encode(" "+e,add_special_tokens=False) or tok.encode(e,add_special_tokens=False)) for e in base}
+    dayids = {e:[x for x in (tok.encode(" "+e,add_special_tokens=False),
+                              tok.encode(e,add_special_tokens=False)) if x] for e in base}
     try: model = AutoModelForCausalLM.from_pretrained(MODEL, dtype=torch.bfloat16, device_map={"":0}).eval()
     except Exception:
         from transformers import AutoModelForImageTextToText
         model = AutoModelForImageTextToText.from_pretrained(MODEL, dtype=torch.bfloat16, device_map={"":0}).eval()
     natrdm = cyc_of(range(N))
     def collect(templates, kmode):
-        endE = {e:[] for e in base}; dayE = {e:[] for e in base}
         rows = ([(e,t,k) for e in base for t in range(len(templates)) for k in KS] if kmode
                 else [(e,t,None) for e in base for t in range(len(templates))])
         prompts = [render(tok, templates[t].format(e=e,k=k) if k is not None else templates[t].format(e=e)) for (e,t,k) in rows]
+        end_rows, day_rows = [], []
         for bi in range(0, len(prompts), 16):
             ch = prompts[bi:bi+16]; rw = rows[bi:bi+16]
             enc = tok(ch, return_tensors="pt", padding=True).to(model.device)
             with torch.no_grad(): o = model(**enc, output_hidden_states=True)
             H = o.hidden_states[L].float().cpu().numpy(); ids_b = enc["input_ids"].cpu().tolist()
             for j,(e,t,k) in enumerate(rw):
-                endE[e].append(H[j,-1,:])
-                pos = last_end(ids_b[j], dayids[e]); dayE[e].append(H[j, pos if pos is not None else -1, :])
-        return (np.stack([np.mean(endE[e],0) for e in base]), np.stack([np.mean(dayE[e],0) for e in base]))
+                pos = last_end(ids_b[j], dayids[e])
+                if pos is None:
+                    raise RuntimeError(f"Could not locate entity token for {e!r} in prompt {ch[j]!r}")
+                end_rows.append(H[j,-1,:]); day_rows.append(H[j,pos,:])
+        return np.stack(end_rows), np.stack(day_rows), rows, prompts
+    all_perms = list(permutations(range(N)))
+    def rsa_only(c):
+        return float(spearmanr(ut(cosM(c)), ut(natrdm)).correlation)
     def stats(c):
-        D = cosM(c); rsa = spearmanr(ut(D), ut(natrdm)).correlation
-        rng = np.random.default_rng(0)
-        nv = [spearmanr(ut(D), ut(cyc_of(rng.permutation(N)))).correlation for _ in range(2000)]
-        return float(rsa), float((np.sum(np.array(nv) >= rsa)+1)/2001), eff_dim(c)
+        D = cosM(c); rsa = rsa_only(c)
+        nv = [spearmanr(ut(D), ut(cyc_of(p))).correlation for p in all_perms]
+        return float(rsa), float(np.mean(np.asarray(nv) >= rsa)), eff_dim(c)
+    def crossed_ci(raw, kmode, nboot=2000):
+        rng = np.random.default_rng(20260917); vals = []
+        nt, nk = raw.shape[1], raw.shape[2]
+        for _ in range(nboot):
+            ti = rng.integers(0, nt, nt)
+            ki = rng.integers(0, nk, nk) if kmode else np.array([0])
+            c = np.take(np.take(raw, ti, axis=1), ki, axis=2).mean((1,2))
+            vals.append(rsa_only(c))
+        return [float(x) for x in np.percentile(vals, [2.5,97.5])]
     out = {}; cents = {}
     for name, tpls, km in [("query", QUERY, True), ("neutral", NEUTRAL, False)]:
-        cE, cD = collect(tpls, km); cents[name] = (cE, cD)
+        end_rows, day_rows, rows, prompts = collect(tpls, km)
+        nt, nk = len(tpls), len(KS) if km else 1
+        shape = (N, nt, nk, end_rows.shape[-1])
+        rawE, rawD = end_rows.reshape(shape), day_rows.reshape(shape)
+        cE, cD = rawE.mean((1,2)), rawD.mean((1,2)); cents[name] = (cE, cD)
         rE,pE,dE = stats(cE); rD,pD,dD = stats(cD)
-        out[name] = {"sentend":{"rsa":rE,"p":pE,"effdim":dE}, "daytok":{"rsa":rD,"p":pD,"effdim":dD}}
+        per_hop = ([{"k":k, "sentend_rsa":rsa_only(rawE[:,:,ki].mean(1)),
+                     "daytok_rsa":rsa_only(rawD[:,:,ki].mean(1))} for ki,k in enumerate(KS)] if km else [])
+        per_template = [{"template":tpls[ti], "sentend_rsa":rsa_only(rawE[:,ti].mean(1)),
+                         "daytok_rsa":rsa_only(rawD[:,ti].mean(1))} for ti in range(nt)]
+        out[name] = {"sentend":{"rsa":rE,"p_exact":pE,"effdim":dE,"ci95":crossed_ci(rawE,km)},
+                     "daytok":{"rsa":rD,"p_exact":pD,"effdim":dD,"ci95":crossed_ci(rawD,km)},
+                     "per_hop":per_hop, "per_template":per_template,
+                     "n_prompts":len(rows)}
         print(f"  [{name:7s}] SENTEND rsa={rE:+.2f} p={pE:.3f} effdim={dE:.1f}  |  DAYTOK rsa={rD:+.2f} p={pD:.3f} effdim={dD:.1f}", flush=True)
-        np.savez(f"results/geometry/natsentend_{tag}_{name}.npz", cent_sentend=cE, cent_daytok=cD, order=np.arange(N))
+        np.savez_compressed(f"results/geometry/natsentend_{tag}_{name}.npz",
+                            cent_sentend=cE.astype(np.float32), cent_daytok=cD.astype(np.float32),
+                            raw_sentend=rawE.astype(np.float16), raw_daytok=rawD.astype(np.float16),
+                            entities=np.array(base), templates=np.array(tpls),
+                            hops=np.array(KS if km else [-1]), prompts=np.array(prompts), order=np.arange(N))
     del model; torch.cuda.empty_cache()
     json.dump({"model":MODEL,"L":L,"nl":nl,"res":out}, open(f"results/geometry/natsentend_{tag}.json","w"), indent=2)
     # ring plot: query condition, sentence-end vs day-token, traced in the natural order

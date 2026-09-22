@@ -11,7 +11,7 @@ Geometry only: forward pass, read last-token-pre-generation residual, group by I
 (imposed + natural-retention) + self-crossings. Same scrambled target orders reused across the 3 rungs (fair compare).
 Caches activations to .npz so re-plotting needs no GPU. Produces FIG_defladder_<tag>_<concept>.png.
 
-Usage (DO NOT run until operator says go):
+Usage:
   python -u defladder.py <hf_model> --concept days [--nscr 3] [--base] [--modes full,list,adj]
 """
 import os, sys, json, numpy as np, torch

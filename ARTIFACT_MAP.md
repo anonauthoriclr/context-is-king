@@ -50,7 +50,8 @@ Figure scripts resolve data through `CIK_DATA` (default `./data`). Run them from
 | RSA dominance (days imposed +0.90 direct / +0.58 free-form; months +0.81) | `geometry/multiscr_*.json` | `geometry/multiscr.py` (+ `natural_geom.py`) |
 | Relabeling crossover (imposed +0.84 / natural −0.04; rank 15/5040) | defladder / multiscr centroid caches | `geometry/geom_concept.py` |
 | Anisotropy-matched null (10/10 scrambles p<0.05) | permutation null | inside `geometry/multiscr.py`; CIs via `figures/soundness_pass.py` |
-| Patching crossover (imp→imp 1.00; nat→nat 1.00; chance 0.14; depth 0.46→0.70) | `causal/causaluse_*.json`; Qwen CoT three-order summary in `causal/causalcot_Qwen3.5-27B_imposed3_visible_final.json` | `causal/causal_use.py` (+ `causal_cot.py`, `causal_k.py`, `rescore_cot_visible_final.py`) |
+| Patching crossover (imp→imp 1.00; nat→nat 1.00; chance 0.14; depth 0.46→0.70) | `causal/causaluse_*.json` (20 imposed orders/model; fixed natural control repeated 6× Gemma, 2× Qwen); Qwen CoT three-order summary in `causal/causalcot_Qwen3.5-27B_imposed3_visible_final.json` | `causal/causal_use.py` (+ `causal_cot.py`, `causal_k.py`, `rescore_cot_visible_final.py`) |
 | Scale-gating (Gemma E2B 0.60→31B 0.87; Qwen reverses @9B; Llama-8B 0.08) | `geometry/multiscr_*.json` | `geometry/multiscr.py` |
 | RSA↔behavior ρ=0.83 / planarity ρ=0.93 | `behavior/k1summary_*_list.json` | `figures/make_paper_figs.py`, `soundness_pass.py` |
 | Matched persistent-homology contrast | `geometry/ph_matched/*.json` + summary CSV | `extract/geometry/ph_matched_{extract,analyze,paired}.py` (analysis needs `ripser`) |
+| 2-D grid extension (App. J): native and imposed QWERTY; arbitrary-token grid | `grid/qwerty_*.json`; `grid/qwertyimposed_*.json`; `grid/grid_gemma-4-31B-it_sep.json` | `grid/geom_qwerty.py`; `grid/geom_qwerty_imposed.py`; `grid/geom_grid.py` |

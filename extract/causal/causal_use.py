@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""CAUSAL USE test (Gate-1 SIGNED OFF 2026-06-23): is the context-built order-map USED to compute the one-shot answer?
+"""CAUSAL USE test: is the context-built order-map USED to compute the one-shot answer?
 
 Entity-substitution activation patch. Prompt = <context O> + "What is 1 step after E_src?" (k=1, answer-only, the regime
 where one-shot reads the map). We OVERWRITE the QUERY entity-token residual E_src->E_dst (donor-cached, same context) at

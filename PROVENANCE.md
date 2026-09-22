@@ -1,124 +1,208 @@
-# PROVENANCE & ACCOUNTABILITY — what actually ran, and how it affects claims (2026-06-22)
+# Measurement provenance and claim scope
 
-Purpose: after a sprawling session (+ one wrong claim by the orchestrator about the thinking flag), record the
-**exact regime each experiment used** and **which claims are solid vs mislabeled vs never-measured.** Verified facts
-only; assumptions flagged.
+**Current as of 2026-09-22.** This file records the experimental regime behind
+the paper's reported results. It is not a research diary: superseded framings
+and abandoned hypotheses are intentionally omitted.
+`ARTIFACT_MAP.md` maps each paper figure and table to its plotting code, cached
+data, and extraction code; this file explains what those measurements mean.
 
-## A. Verified per-model thinking behavior (from `per_model_thinking.py`, 2026-06-22)
-Instrument: chat-template tail + open-ended generation (no format instruction), default mode.
+## 1. Shared measurement conventions
 
-| model | `enable_thinking` flag | default template | OPEN-ENDED natural behavior |
-|---|---|---|---|
-| Gemma-4-31B-it | accepted & **functional** | opens `<|channel>thought` → **thinks by default** | reasons ~92 tok, step-walks the order, **correct (Tuesday)** |
-| Qwen3.5-27B | accepted & **functional** | opens `<think>` → **thinks by default** | reasons **>512 tok (didn't finish)** — long native reasoning |
-| Llama-3.1-8B-it | accepted but **no-op** | standard `assistant\n\n`, **no thinking channel** | still reasons in plain output ~83 tok, **correct (Tuesday)** |
+- **Primary readout.** Relational geometry is measured from the residual stream
+  at the final prompt token, immediately before generation. This state follows
+  the rule, query, and any regime instruction. It is therefore a downstream,
+  task-conditioned representation, not the entity token in isolation.
+- **Probe layer.** The standard geometry readout is at
+  `round(0.75 * n_layers)`. This fraction was selected from full-layer sweeps on
+  Gemma-31B and Qwen-27B, then fixed across models and concepts. The full sweeps
+  are cached in `data/geometry/layer_sweep_*.json`.
+- **Entity centroids.** In the main cyclic experiment, each entity centroid
+  averages six query paraphrases at each hop count `k=1,...,6`, for 36 prompt
+  states per entity and imposed order.
+- **RSA.** Every reported representational similarity analysis uses the
+  full-dimensional, mean-centered cosine representational dissimilarity matrix
+  (RDM). The statistic is Spearman correlation between its off-diagonal entries
+  and those of the candidate relational-distance template. PCA is used for
+  visualization and for the separately reported planarity diagnostics, not to
+  choose the dimensions used by RSA.
+- **Independent unit.** Scrambles or token-to-position assignments are the
+  independent units for uncertainty. Headline confidence intervals are computed
+  across those units rather than across pooled prompts or entity pairs.
+- **Models.** The main scale comparison uses eight instruction-tuned checkpoints:
+  Gemma-4 E2B, E4B, 12B, and 31B; Qwen-3.5 4B, 9B, and 27B; and
+  Llama-3.1-8B-Instruct. Base-model caches are supplementary and are not part of
+  the paper's eight-model scaling claim.
 
-**Key takeaways:** (1) "flag accepted (no TypeError)" is UNINFORMATIVE — all 3 accept it; template-tail + behavior are
-the real tells. (2) Gemma & Qwen **think by default**; Llama has no thinking channel but **reasons in plain output**.
-(3) **All three, open-ended, naturally reason and answer correctly** — the snap "automata" behavior is IMPOSED by us,
-not their default.
+## 2. Prompt and generation regimes
 
-## B. The shared code regime (`render()` in defladder*/cot*/k1*/toy_data/wrap_2x2)
-- Automata/one-shot reads: prompt + **"Answer with ONLY the name"**, `enable_thinking=False`, residual at **last prompt
-  token (pre-generation)**. `enable_thinking=False` was accepted AND functional → for Gemma/Qwen **native thinking was
-  suppressed** (verified: one-shot outputs were bare 2-token answers, F44 check).
-- "CoT" reads: prompt + **"Work through it ONE STEP AT A TIME … FINAL:"**, `enable_thinking=False`, residuals along the
-  generated tokens. → **thinking-suppressed + dictated enumeration.** NOT native thinking, NOT natural reasoning.
+| regime | instruction and model mode | geometry readout or behavioral endpoint |
+|---|---|---|
+| **direct** | `Answer with ONLY the name, nothing else.`; native thinking disabled where supported | final prompt token for geometry; generated short answer for behavior |
+| **scripted reasoning** | explicit instruction to traverse step by step and finish with `FINAL: name`; native thinking disabled | parsed final answer after the prescribed traversal |
+| **free-form** | no trailing answer-format instruction; native thinking enabled | generated final answer; when geometry is measured, the readout is still the final prompt token before reasoning begins |
+| **non-structural probe** | the same contextual rule followed by a bare mention or short story that asks nothing about the relation | final prompt token |
 
-## C. Per-experiment provenance & claim status
+The direct and scripted regimes are deliberately different tasks. Results from
+the scripted regime are not described as native chain-of-thought. The free-form
+geometry result is a **pre-reasoning** readout under a native-thinking scaffold;
+the paper does not measure entity-layout geometry during the generated reasoning
+trace.
 
-| finding | exact regime | what it actually measured | status |
-|---|---|---|---|
-| **F43** def-ladder rings | answer-only, thinking-OFF, pre-gen | the **forced-snap / automatic** pre-gen geometry | SOLID (correctly the automatic regime) |
-| **F44** one-shot accuracy (k≥2 collapse) | answer-only, thinking-OFF, generate | accuracy **when forced to snap-answer** | SOLID empirically (bare answers verified) — but re-word: "forced-snap fails k≥2," NOT "the model can't" (natural reasoning succeeds, §A) |
-| **F45** "CoT regime" geometry / regime-dependence | **step-by-step DICTATED, thinking-OFF**, pre-gen + along-gen | geometry under a *dictated-enumeration* prompt, native thinking suppressed | **MISLABELED**: this is "snap-prompt vs dictated-enumeration-prompt, both thinking-off" — NOT "automata vs native-CoT". Regime-difference is real *between these two prompts*; do not call it native thinking. |
-| **ring-formation along CoT** | dictated enumeration, thinking-OFF | RSA along a *prescribed* walk | confounded by our instruction (we dictated the steps); inconclusive anyway |
-| **toy regime-lock** (1.00 in-dist, chance cross) | answer-only-pregen vs reason-instruction-pregen, thinking-OFF | probe transfer between **two prompt conditions** (thinking-off) | SOLID as "probe doesn't transfer across these two prompt conditions"; **mislabel risk**: it's not automata-vs-native-thinking |
-| **2×2 wrap (line vs cycle)** | answer-only, thinking-OFF, pre-gen | definition-content effect on the **automatic** pre-gen geometry | SOLID (within the automatic regime) |
-| **causal USE — snap** (`causal_use.py`, 2026-06-23) | entity-substitution patch E_src→E_dst, answer-only, k=1, Gemma-31B, 2 scr, 42 pairs | does the context-defined relation **causally mediate** the answer | SOLID. Double dissociation @L27 (clean locus): imposed→succ_imp(dst)=1.00, natural→succ_nat(dst)=1.00; other-map=chance(0.14); controls clean (random 0.14, position 0.05–0.07). Flip live L6–L27, **answer locked by L42+**. SCOPE: mediation+localization, NOT manifold-axis causality (linear-steer-on-ring intractable). |
-| **causal USE — CoT/open-ended** (`causal_cot.py`, 2026-06-23) | same patch, **thinking ON, open-ended 400-tok**, Gemma-31B, 1 scr, 42 pairs | does the patch **survive into natural reasoning** (Standard #10 regime-match) | SOLID. Final answer→succ_O(dst)=1.00 (imposed, layer-robust L6–27), dissociation holds; **patch drives the trace** (mentions dst>src 86%; model recites imposed order + wraps about the PATCHED entity though prompt says src). Capability contrast: E2B patch DIES in CoT (surface reasserts, 0.00). |
-| **E4 renderer-generalization: imposed TREE** (`geom_tree.py`, 2026-06-24) | declarative binary tree on **arbitrary tokens**, entity-layout pre-gen, 6 scr, Gemma-31B/E2B/Qwen-27B; 3 query sets (rel/anc/neutral) | does the renderer draw a **non-cyclic** (hierarchy) structure | SOLID. Renders **depth** (RSA +0.53 Gemma / +0.57 Qwen; parent↔child farthest) + **branch** (leaf sib<cous, true-pairing 6/6, p≈0.0014). **INTRINSIC**: depth-RSA rises rel→anc→neutral 0.53→0.61→**0.92** / 0.57→0.69→**0.89** (strongest with NO structural query). **Triple-controlled**: line-free leaf test, neutral queries, within-token-pair flip 12/12 (Δ≈−0.9, not token semantics). **Capability-gated** (E2B collapses). METRIC LESSON: hierarchy embeds as DEPTH-bands, NOT tree-path (path-RSA −0.26 was a false negative). SCOPE: salient low-dim projection (depth+branch); full 2-D tree compressed. **DEPTH-3 replication** (15 nodes, 4 levels, neutral): depth-RSA +0.82/+0.71, nested branch among 8 leaves monotone sib<cousin<2nd-cousin both families → renders full nesting. |
-| **E1 arbitrary-token 2×2** (`wrap_2x2.py --concept arb7/arb12`, 2026-06-24) | structure-free tokens, no pretrained ring, Gemma-31B | is topology-follows-spec re-selecting a pretrained ring? | SOLID. NO: wrap drives closure on arb tokens (list dRSA −0.12/clos 2.7=line; adj +0.31/1.1=cycle; arb12 same). Tautology objection CLOSED. |
-| **E4 depth-4 scaling** (`geom_tree.py --depth 4 --qset neutral`, 2026-06-24) | 31-node 5-level binary tree, arbitrary tokens, neutral queries, 6 scr, Gemma-31B + Qwen-27B | does depth/branch hold at the deepest level | SOLID. depth-RSA **+0.729 Gemma / +0.630 Qwen** (all 6 scr 0.53–0.76); leaf genealogy gradient **monotone to the top-level split, both families** (sib<cousin<2nd<3rd). The single-scramble "fold-back" was noise (**RETRACTED**). Qwen note: gradient is steep at the sibling step then flat beyond (cousin≈2nd≈3rd) — Qwen branch is sibling-dominated. analyzer = `analyze_genealogy.py` (depth-general; old `analyze_tree.py` is N=7-hardcoded). |
-| **E4 co-occurrence control** (`geom_tree.py --sepedges --depth 3 --qset neutral`, 2026-06-24) | one edge per sentence, siblings shuffled apart (NEVER co-listed), 6 scr, Gemma-31B + Qwen-27B | is sibling closeness rendered or just text co-occurrence | SOLID. **Depth-RSA unchanged** (0.825→0.823 Gemma, 0.705→0.718 Qwen) → depth has ZERO co-occurrence dependence. **Siblings loosen but stay tightest & monotone** (Gemma 0.141→0.216, Qwen 0.146→0.364); sibling–cousin gap −57%/−34% → branch is part surface-driven, part rendered; **report controlled numbers**. branch-RSA stays + every scr (Gemma +0.25, Qwen +0.36). **NO low-dim branch geometry**: in 3 PCs siblings only moderately nearer (−27%/−38%), top-level split near-flat (operator confirmed on demos) → branch = METRIC, depth = the figure. |
+## 3. Evidence ledger
 
-## D. What's solid / mislabeled / never-measured
-- **SOLID:** the *automatic / forced-snap* regime results (F43 rings, F44 snap-accuracy, 2×2 topology) — all at pre-gen
-  under a verified thinking-off snap prompt. The probe regime-lock is solid *as transfer between our two prompt conditions.*
-- **MISLABELED (the F45 era, still true):** the *old* "CoT geometry" (defladder_cot / cot_extract, F45) was **thinking-OFF
-  + dictated enumeration** — re-label "dictated-reasoning prompt (thinking-off)." Distinct from the NEW runs below.
-- **NEVER MEASURED → PARTIALLY CLOSED [2026-06-23 UPDATE].** Two newer runs measure the natural/native-thinking *prompt*:
-  (i) **`natural_geom.py`** reads geometry under the **default native-thinking scaffold** (verified: render() passes NO
-  `enable_thinking=False`), at the **pre-thinking token** (the thinking-opener, before any reasoning is generated) — 12
-  scrambles, imposed RSA **0.639±0.048**, dRSA −0.23, all lines. So natural-PROMPT *pre-thinking* geometry IS now measured.
-  (ii) **`causal_cot.py`** runs the causal patch under **thinking-ON open-ended generation** (verified reasoning traces) —
-  genuinely native reasoning, NOT dictated. **STILL never measured:** entity-layout GEOMETRY read *during/after* native
-  thinking (mid-reasoning residual). The draft (§3/§4/§6) refers to these NEW runs and is consistent with this update; the
-  pre-2026-06-23 "never measured / thinking-off" wording above was stale for them.
+### 3.1 Conflicting cyclic orders and scale
 
-## F. CONSOLIDATED THREAD CLAIM — the verified spine
+- **Extraction:** `extract/geometry/multiscr.py`
+- **Cached outputs:** `data/geometry/multiscr_<model>.json`
+- **Regime:** direct, zero-shot (`--noexamples`), final pre-generation state.
+- **Sampling:** 10 imposed orders per model and concept; six paraphrases and six
+  hop counts per entity.
+- **Reported quantity:** imposed-order RSA and residual natural-order RSA in the
+  same state. The per-scramble values support the confidence intervals in
+  `data/soundness_ci.md`.
+- **Scope:** this establishes context-dependent relational organization and its
+  variation across the tested checkpoints. It is not, by itself, a causal claim
+  about the RSA geometry.
 
-**[2026-06-25 FRAMING RECALIBRATION (Gate-3, operator-approved). Spine content unchanged; emphasis moved.]** Two adversarial
-critics (whole-paper + novelty gatekeeper) converged: "renderer, NOT store" as a *title/verdict* over-reaches — §6 itself
-concedes capability-gating can't separate a computed map from a context-gated readout of a store, and the "store" it beats
-is a strawman. **DECISION:** lead with **topology-follows-specification** (the one un-scooped result); keep "render/rendering"
-as the *mechanistic* frame; demote the anti-realist "renderer not store" to an **interpretation argued in §9** (parsimony:
-construction-on-demand over arbitrary tokens), not a proven dichotomy. [SUPERSEDED by the 2026-06-25b block below: final
-title is "Context Is King, Scale Is the Gate: How In-Context Specification Sets the Geometry of Concepts" and "render" was
-fully retired.] Draft retitled + abstract/§1/§9 rewritten; realist foil (Othello/Li–Nanda/Engels) added
-to §2. NEW EVIDENCE folded in (both CPU, saved data, agent-computed + verified):
-- **Dominance head-to-head** (`multiscr_*.json` + `naturalgeom_*.npz`): in the SAME probed state, Gemma-31B days imposed-RSA
-  vs residual natural-RSA = 0.639 vs 0.059 (gap **+0.58**, natural prompt) / 0.870 vs −0.033 (gap **+0.90**, snap); months
-  snap 0.811 vs 0.049. Capability-gated: weak Qwen-9B days gap **−0.33** (natural ring RETAINED) → "dominates on conflict"
-  is a capable-model claim. Quantifies the previously-adjectival "dominates."
-- **Predictive co-occurrence** (`k1summary_*_list.json`, 8 models/3 families): imposed-RSA rank-predicts one-shot k=1
-  adjacency accuracy, Spearman **ρ=0.83, p=0.011** — renderers read the map correctly, non-renderers (Llama-8B RSA≈0, acc
-  0.26) fail. CAVEAT: ceiling-compressed (5 capable models ~0.9–1.0), family-confounded, within-family weak/inverted →
-  report as capability-gated co-occurrence, NOT a tight law.
+The free-form Gemma-31B robustness check uses 12 imposed orders and reads the
+last prompt token before native reasoning begins (`extract/geometry/natural_geom.py`;
+compact statistics in `data/soundness_ci.md`). Non-structural mention and story
+controls are produced by `extract/geometry/geom_storyprobe.py`; compact outputs
+are in `data/table_summaries.json`.
 
-**[2026-06-25b — TITLE + "RENDER" RETIRED (operator decision after same-reviewer head-to-head vs the "Latent Undertow"
-paper).]** Same reviewer graded both: Latent Undertow 7 (focus + one quantified deployment number + finished/labeled gaps);
-this paper 6 as-framed but novelty 8, "deficit is the fixable kind → 7–8 after refocus+figures." Operator elevated
-**capability-gating to a co-equal PILLAR** (not demoted): paper is now **two pillars — (1) construction+topology,
-(2) capability-gated computation / "scale is the gate"** with the methodological consequence ("small-model interp does not
-extrapolate up") as the headline so-what; the 8-model within-family scale ladders (Gemma E2B 0.60→E4B 0.72→31B 0.87 days;
-Qwen 4B 0.46→9B 0.61→27B 0.71 months) disentangle scale from family (answers the critic). **"Renderer" framing fully
-RETIRED** (operator unsure of it) — title now **"Context Is King, Scale Is the Gate: How In-Context Specification Sets the
-Geometry of Concepts"**; every render/renderer/rendering purged from draft → construct/build/compute on demand; §9 keeps the
-computed-not-retrieved interpretation without the renderer word. Draft fully reworked (title/abstract/§1/§4–9), FIGURES +
-draft-header synced.
+### 3.2 Where context takes over
 
-### Pre-recalibration spine (2026-06-22, content still verified):
-**In sufficiently capable models, the pre-reasoning (pre-generation) representation is a CONTEXT-CONSTRUCTED MAP of the
-imposed relational structure** — robust across **regimes** (snap / instructed / natural), **orders** (12 scrambles),
-and **concepts** (days/months) — and its **TOPOLOGY is dictated by how the context specifies the relations** (numbered
-list → LINE; adjacency-with-wrap → CYCLE; 2×2 + direct closure test, cross-model). Forming this map for a *conflicting*
-order is **CAPABILITY-GATED**: small/weak models fail (Llama-8B natural RSA 0.08; small-Qwen days-list ~0). **Reading the
-map one-shot recovers only local/adjacency structure (1-hop); multi-step traversal requires reasoning** (k≥2: snap fails,
-reasoning succeeds). **The context-defined relation CAUSALLY MEDIATES the answer** (entity-substitution patching; double
-dissociation imposed-vs-natural; **regime-matched across snap + open-ended CoT**; capability-gated — dies in weak model) —
-*scoped to mediation/localization, NOT manifold-axis causality.* Anti-realist reading: the cyclic/linear geometry is a
-*readout of context-specified relations*, not an intrinsic world-model.
+- **Extraction:** `extract/geometry/geom_possweep.py`
+- **Cache:** `data/geometry/possweep_gemma-4-31B-it_all.npz`
+- **Comparison:** the queried entity token versus successive downstream prompt
+  positions, ending at the pre-generation state.
+- **Interpretation:** pretrained organization can remain visible at the entity
+  token while the integrated downstream state follows the imposed order. This is
+  position-resolved representational evidence, not a claim that the entity-token
+  representation itself is overwritten.
 
-EVIDENCE: F43 (multi-scramble, cross-family, cross-concept); **2×2 + direct wrap-pair closure** (cross-model, list→line/
-adj→cycle, content not format); **12-order pre-thinking robustness** (Gemma-31B, RSA 0.64±0.05, all lines, dRSA −0.23);
-**3-regime check** (automata/instruct/natural all LINE under list, same order); **F44 + natural behavior** (snap=1-hop
-verified bare answers, reasoning=multi-hop, Gemma-31B natural acc 1.00 / Llama-8B 0.57); F42 anisotropy null; F29 crossover.
+### 3.3 Hierarchies, closure, and matched topology checks
 
-RETIRED CLAIMS (with reason — do not ship):
-- "days = rigid outlier / scale+instruct-gating as a general law" → **Qwen-specific** (F39, cross-family sweep).
-- "automata representation is cleaner/superior to reasoning" → **both capable regimes hold the structure** (§A + 3-regime check).
-- "natural → ring vs instruct → no-ring" → **all LINE under list; topology = format, not regime** (compare3_gemma).
-- "clean ring" from RSA alone (multiple over-reads) → **require dRSA(cyc−lin)<0 + closure ratio + plot** for any ring/cycle claim. RSA + X=0 are NOT sufficient.
-- "regime-dependent geometry" as a deep claim → reinterpret: **same structure, different subspace**; the cross-regime probe non-transfer may be **partly a shallow position/token effect** (different scaffold tokens). Only the **regime-LOCK probe non-transfer** (practical: match the regime) + the **cheap generation-free read** survive.
-- "ring crystallizes along the CoT" → **inconclusive + over-controlled** (dictated step-by-step; not native/natural).
+- **Hierarchy extraction:** `extract/geometry/geom_tree.py` and
+  `extract/geometry/demo_tree.py`; six randomized assignments for the main
+  hierarchy analyses. Depth RSA and sibling-versus-cousin distances are measured
+  in the full RDM. PCA panels are illustrations.
+- **Co-occurrence control:** the hierarchy is restated as individually shuffled
+  edges so siblings are not co-listed. The control supports depth organization
+  and a reduced but remaining branch-distance effect; it does not show a faithful
+  low-dimensional drawing of every tree edge.
+- **Wrap factorial:** `extract/behavior/wrap_2x2.py`; two scrambles per cell. It
+  crosses surface form (numbered list versus adjacency statements) with whether
+  the wrap relation is stated. Closure is graded, not a binary topology verdict.
+- **Endpoint co-occurrence control:** `extract/behavior/wrap_cooccur_control.py`;
+  three scrambles. Co-mention without a wrap relation leaves both models open;
+  relation-only closure is stronger in Gemma than Qwen.
+- **Matched persistent homology:** the cyclic and hierarchical conditions use the
+  same arbitrary tokens, assignments, six query templates, layer, and readout at
+  `N=7` and `N=15`, with 10 paired scrambles for Gemma-31B and Qwen-27B. Cyclic
+  minus hierarchical normalized top-`H1` persistence is positive in all four
+  cells (`+0.083` to `+0.140`); crossed-bootstrap intervals exclude zero and exact
+  paired tests give `p <= 0.027`. Only Qwen-27B at `N=15` independently clears
+  the stricter query-shuffle null, and longest-versus-second-longest persistence
+  is not robust. Persistent homology is therefore comparative confirmation, not
+  standalone proof of one dominant loop. Results are in
+  `data/geometry/ph_matched/`.
 
-PAPER SHAPE (converging): **Core = context-constructs-the-map (anti-realist) + topology-follows-specification + capability-gated
-+ representation-vs-computation.** **Downstream = suffix-probing**: the pre-reasoning representation is a context-built map of
-input attributes, so a small generation-free "snap" suffix yields a cheap read of it (KV-fork) — a **cost/method** result
-(NOT representation-superiority), with the **regime-matching** caution and the **input-attribute vs reasoning-driven** boundary.
+### 3.4 Same entities under different specifications
 
-## E. Required correction going forward
-Re-run the "reasoning" side **honestly**: open-ended prompt (no format dictation), **native thinking ON** for Gemma/Qwen
-(default), measure BOTH (a) answer accuracy and (b) imposed-structure geometry in the natural regime. Keep the automatic
-(forced-snap) regime as the verified concentrated baseline. Only then can we make any "automata vs reasoning" claim.
+- **Extraction:** `extract/shapes/shape_test_v4.py` and
+  `extract/geometry/natural_sentend.py`.
+- **Conditions:** the same weekdays under no rule, an imposed cycle, an imposed
+  line, or an imposed hierarchy at the fixed `0.75 * n_layers` readout.
+- **Sampling:** each imposed condition averages 12 neutral/diverse query types
+  over 10 randomized token-to-position assignments. The no-rule baseline averages
+  six query phrasings over six hop counts.
+- **Scope:** the comparison shows that one token set can support distinct
+  relational organizations. The 3-D PCA camera in the figure is illustrative;
+  the reported RSA is computed in the full-dimensional RDM.
+
+### 3.5 Activation patching
+
+- **Direct intervention:** `extract/causal/causal_use.py`. At one layer, the full
+  residual at the queried entity position is overwritten with the donor entity's
+  residual from the same context. All matched entity subtokens are patched,
+  right-aligned. Success means that the generated answer becomes the donor
+  entity's successor under the current context.
+- **Flagship sampling:** 20 imposed orders and all 42 ordered unequal weekday
+  pairs per order for each flagship model. The fixed natural-order control is
+  repeated six times for Gemma-31B and twice for Qwen-27B. The caches are
+  `data/causal/causaluse_gemma-4-31B-it.json` and
+  `data/causal/causaluse_Qwen3.5-27B.json`.
+- **Controls:** a norm-matched random donor tests nonspecific perturbation; an
+  adjacent-position injection tests whether the entity slot is necessary. The
+  scale-ladder table uses the common two-order subset per model-concept cell and
+  fixed normalized layer fractions.
+- **Cross-order control:** `extract/causal/causal_cross_order.py` patches an entity
+  between prompts specifying different orders. Twenty independent order pairs
+  distinguish transfer of entity identity from transfer of the donor prompt's
+  relation; results are in `data/causal/crossorder_gemma-4-31B-it_n20*.json`.
+- **Reasoning checks:** Gemma scale comparisons use two orders per checkpoint.
+  The Qwen-27B free-form patch uses three imposed orders; only visible final
+  answers are scored, and truncation is reported rather than treated as an
+  incorrect successor. Step-count patching uses two scrambles.
+- **Scope:** these interventions causally localize context-dependent binding of
+  entity identity, and separately of the requested step count, into the successor
+  computation. They do **not** intervene on the RSA-defined manifold and do not
+  establish that manifold as the causal carrier.
+
+### 3.6 Behavioral validation
+
+- **Direct hop sweep:** `extract/behavior/defladder_acc.py`; two imposed orders,
+  hop counts `k=1,...,6`, compared with the natural order at the same hop counts.
+- **Three regimes:** `extract/behavior/behavior_3regime.py`; direct, scripted, and
+  free-form generation are scored separately. Qwen generations that exhaust the
+  2048-token budget without a conclusion are reported as over-budget; the parser
+  reads only the visible final response.
+- **Scope:** these measurements distinguish a represented relational organization
+  from the ability to traverse it under a particular prompting and generation
+  regime. Cross-model RSA-behavior correlation is convergent validity, not a
+  within-model causal effect.
+
+### 3.7 Two-dimensional extension
+
+- **Extraction:** `extract/grid/geom_qwerty.py`,
+  `extract/grid/geom_qwerty_imposed.py`, and `extract/grid/geom_grid.py`.
+- **Caches:** `data/grid/`.
+- **Sampling and tests:** imposed QWERTY and arbitrary-token grids use six
+  randomized assignments. The native-QWERTY permutation test compares the
+  reported Manhattan-distance RSA against the matched Manhattan template.
+- **Scope:** this appendix extends formation and override beyond one-dimensional
+  cycles. Native grid structure is weaker and model-dependent, so it is not used
+  as the paper's primary evidence.
+
+## 4. Claim boundaries
+
+The released evidence supports the paper's claims only at the following levels:
+
+1. Context changes the measured downstream relational organization.
+2. The organization tracks cycles, hierarchy depth and branch relationships,
+   graded closure, and a two-dimensional grid under the tested specifications.
+3. Entity and step-count patching causally localize inputs to the
+   context-conditioned successor computation.
+4. Clean prior suppression and the full patching crossover appear more reliably
+   in the larger tested checkpoints, but the trend is family-dependent and
+   nonmonotonic.
+
+The evidence does not determine whether the downstream organization is built
+anew or produced by context-dependent reconfiguration of stored structure. It
+does not establish the RSA manifold as a causal mediator, a universal scaling
+law, faithful embedding of every tree edge, or geometry during native generated
+reasoning.
+
+## 5. Reproduction and retained artifacts
+
+- `figures/make_all.py` regenerates the paper figures from the checked-in caches
+  without model weights.
+- `ARTIFACT_MAP.md` is the exact figure/table-to-code-and-data index.
+- `data/README.md` explains which figure-ready caches and compact table summaries
+  are retained. Large raw activation tensors used only for table analyses are
+  omitted when compact per-scramble or aggregate results preserve the reported
+  measurement; the corresponding GPU extraction scripts remain in `extract/`.
+- A displayed panel may use a representative scramble when its caption says so.
+  Reported means, confidence intervals, and tests use the aggregate artifact and
+  the statistical unit specified above, not the displayed example alone.

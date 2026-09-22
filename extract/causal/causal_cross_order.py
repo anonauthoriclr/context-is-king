@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Cross-order entity-slot intervention (Gate 1 approved 2026-09-16).
+"""Cross-order entity-slot intervention.
 
 The established causal-use experiment patches a donor entity from the same
 context into the queried entity site.  This experiment holds the patch site

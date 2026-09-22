@@ -5,7 +5,7 @@ late)? Companion to causal_use.py (entity patch). Same machinery, target = the k
 Prompt = <imposed order O> + "Advance {k} steps from {E}. Which item?" (snap/answer-only). Overwrite the k-digit token
 residual k_src->k_dst (donor = same prompt with k_dst) at decoder layer ell during prefill; generate; check answer ==
 succ_O^{k_dst}(E) (the k_dst-hop successor). Restrict to (E,k) where the no-patch baseline is correct at BOTH k_src and
-k_dst (clean flip). ALL k-pairs k in {1..KMAX} (operator: "show all pairs work"), full k_src x k_dst matrix at the causal
+k_dst (clean flip). Tests all k-pairs in {1..KMAX}, with the full k_src x k_dst matrix at the causal
 layer + layer sweep. Controls: random-donor at k-slot; k-donor at a non-k slot.
 
 Usage: python -u causal_k.py <hf_model> [--nscr 2] [--kmax 6] [--concept days]

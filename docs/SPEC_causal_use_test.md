@@ -1,8 +1,9 @@
-# SPEC — Causal USE test: is the context-built map *used* to compute the answer? (Gate-1 SIGNED OFF)
+# SPEC — Causal USE test: is the context-built map *used* to compute the answer?
 
-> Status: SIGNED OFF @ Gate-1 (methods agreement, 2026-06-23 — operator: "sounds right plan. im with you"). Purpose:
-> defeat the tautology objection ("geometry is a passive probe-readout") by showing the **context-built map causally
-> mediates the one-shot answer** — the interventions rung. This is CORE science (not application).
+> Historical experiment specification, approved on 2026-06-23 and retained for
+> methodological provenance. Its purpose is to test whether the context-defined
+> relation participates in the one-shot successor computation rather than being
+> only a passive probe readout.
 >
 > **LOCKED DESIGN DECISIONS (the 3 open choices, resolved):**
 > 1. **Patch site = entity-token** (inject identity; map stays intact). NOT pre-gen-slot.
