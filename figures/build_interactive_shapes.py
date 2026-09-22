@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Interactive 3-D 'topology on command' hero: the same seven weekdays rendered
-as a ring, a cycle, and a tree by the in-context specification alone.
+"""Interactive 3-D companion to the paper's shape figure: the same seven
+weekdays under no rule, an imposed cycle, and an imposed tree.
 
 Emits two things into assets/ (committed, so the repo landing page is alive):
   * shapes_3d.html      -- self-contained interactive plotly figure (rotate it)
@@ -27,16 +27,19 @@ os.makedirs(ASSETS, exist_ok=True)
 TAG = "gemma-4-31B-it"
 
 z = np.load(os.path.join(DATA, "shapes", f"shape_v4cent_{TAG}.npz"), allow_pickle=True)
+nat_end = np.load(
+    os.path.join(DATA, "geometry", f"natsentend_{TAG}_query.npz")
+)["cent_sentend"].astype(np.float64)
 days = [str(d) for d in z["days"]]
 N = len(days)
 edges = z["tree_edges"].tolist()
 depth = z["tree_depth"]
 
-# (key, title, mode, positions-for-ordering/coloring)
+# (centroids, title, mode, positions-for-ordering/coloring)
 PANELS = [
-    ("NAT_day",   "Natural (no rule) - a ring",   "ring", list(range(N))),
-    ("CYCLE_end", "Imposed cycle - a ring",       "ring", z["CYCLE_ipos"].tolist()),
-    ("TREE_end",  "Imposed tree - depth bands",   "tree", None),
+    (nat_end,        "No rule - natural organization", "ring", list(range(N))),
+    (z["CYCLE_end"], "Imposed cycle - a ring",          "ring", z["CYCLE_ipos"].tolist()),
+    (z["TREE_end"],  "Imposed tree - depth bands",      "tree", None),
 ]
 
 
@@ -56,8 +59,8 @@ fig = make_subplots(
     rows=1, cols=3, specs=[[{"type": "scene"}] * 3],
     subplot_titles=[t for _, t, _, _ in PANELS], horizontal_spacing=0.02,
 )
-for c, (key, _title, mode, ip) in enumerate(PANELS, start=1):
-    P = pca3(z[key])
+for c, (centroids, _title, mode, ip) in enumerate(PANELS, start=1):
+    P = pca3(centroids)
     if mode == "ring":
         col = np.array(ip, dtype=float)
         path = ring_path(ip)
@@ -90,21 +93,26 @@ scene = dict(xaxis=dict(visible=False), yaxis=dict(visible=False),
              zaxis=dict(visible=False), aspectmode="data",
              camera=dict(eye=dict(x=1.5, y=1.5, z=1.1)))
 fig.update_layout(
-    title=dict(text="Context sets the topology: the same seven weekdays, "
-                    "three specifications  (drag to rotate)", x=0.5, font=dict(size=16)),
+    title=dict(text="The same seven weekdays in three contexts  (drag to rotate)",
+               x=0.5, font=dict(size=16)),
     scene=scene, scene2=scene, scene3=scene,
     margin=dict(l=0, r=0, t=60, b=0), width=1200, height=480,
     paper_bgcolor="white")
 html_path = os.path.join(ASSETS, "shapes_3d.html")
-fig.write_html(html_path, include_plotlyjs=True, full_html=True)
+fig.write_html(
+    html_path,
+    include_plotlyjs=True,
+    full_html=True,
+    div_id="context-is-king-shapes-3d",
+)
 print("WROTE", html_path)
 
 # ---------------------------------------------------------------- rotating GIF
 mfig = plt.figure(figsize=(12, 4.2))
 axes, data3d = [], []
-for c, (key, title, mode, ip) in enumerate(PANELS, start=1):
+for c, (centroids, title, mode, ip) in enumerate(PANELS, start=1):
     ax = mfig.add_subplot(1, 3, c, projection="3d")
-    P = pca3(z[key])
+    P = pca3(centroids)
     if mode == "ring":
         col = np.array(ip, dtype=float); cm = "twilight"; path = ring_path(ip)
         ax.plot(P[path, 0], P[path, 1], P[path, 2], "-", color="0.6", lw=1.6)
@@ -129,7 +137,7 @@ def _spin(frame):
     return []
 
 
-anim = FuncAnimation(mfig, _spin, frames=range(0, 360, 6), interval=60, blit=False)
+anim = FuncAnimation(mfig, _spin, frames=range(0, 360, 6), interval=70, blit=False)
 gif_path = os.path.join(ASSETS, "shapes_rotating.gif")
-anim.save(gif_path, writer=PillowWriter(fps=18), dpi=80)
+anim.save(gif_path, writer=PillowWriter(fps=15), dpi=80)
 print("WROTE", gif_path)
