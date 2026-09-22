@@ -5,8 +5,6 @@ imposed order for ring plots. Usage: python -u geom_possweep.py <hf_model> [--ns
 import os,sys,json,numpy as np,torch
 from scipy.stats import spearmanr
 from transformers import AutoTokenizer,AutoModelForCausalLM,AutoConfig
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 MODEL=sys.argv[1]; NSCR=int(sys.argv[sys.argv.index("--nscr")+1]) if "--nscr" in sys.argv else 3; FRACD=0.75
 base=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]; N=7
 COMPLEX=[
@@ -64,8 +62,8 @@ def main():
             if f==1.0: C1=C
         C0_all.append(C0); C1_all.append(C1); ord_all.append(o); ipos_all.append(ipos); rimp_all.append(ri); rnat_all.append(rn)
         print(f"  scr{si}: imp@0={ri[0]:+.2f} imp@1={ri[-1]:+.2f} nat@0={rn[0]:+.2f} nat@1={rn[-1]:+.2f} order={o}",flush=True)
-    np.savez(os.path.join(data_dir("geometry"), f"possweep_{tag}_all.npz"),fracs=np.array(FRACS),tok=np.array(base),
+    np.savez(f"results/geometry/possweep_{tag}_all.npz",fracs=np.array(FRACS),tok=np.array(base),
              cents0=np.array(C0_all),cents1=np.array(C1_all),orders=np.array(ord_all),ipos_all=np.array(ipos_all),
              rimp_all=np.array(rimp_all),rnat_all=np.array(rnat_all))
-    print("SAVED",os.path.abspath(os.path.join(data_dir("geometry"), f"possweep_{tag}_all.npz")),flush=True)
+    print("SAVED",os.path.abspath(f"results/geometry/possweep_{tag}_all.npz"),flush=True)
 if __name__=="__main__": main()

@@ -4,12 +4,10 @@ five concepts the paper lists (weekdays, months, zodiac, clock hours, musical no
 (neutral mentions + natural k-step queries) and read BOTH at sentence-end (the paper's readout) and at the entity token
 (fair 'does the prior exist' check). Report cyclic RSA (natural order) + permutation-null p + participation-ratio
 eff-dim at each readout. Forward-only. Usage: python -u verify_pretrained.py <hf_model>
-Out: data_dir("geometry")/pretrained_verify_<tag>.json"""
+Out: results/geometry/pretrained_verify_<tag>.json"""
 import os, sys, json, numpy as np, torch
 from scipy.stats import spearmanr
 from transformers import AutoTokenizer, AutoModelForCausalLM, AutoConfig
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 
 MODEL = sys.argv[1]; FRACD = 0.75
 CONCEPTS = {
@@ -36,7 +34,7 @@ def last_end(ids, sub):
     return best
 
 def main():
-    tag=MODEL.split("/")[-1]; os.makedirs(data_dir("geometry"),exist_ok=True)
+    tag=MODEL.split("/")[-1]; os.makedirs("results/geometry",exist_ok=True)
     cfg=AutoConfig.from_pretrained(MODEL); nl=getattr(cfg,"num_hidden_layers",None) or getattr(getattr(cfg,"text_config",None),"num_hidden_layers",None)
     L=int(round(FRACD*nl)); print(f"VERIFY-PRETRAINED {MODEL} L={L}/{nl}",flush=True)
     tok=AutoTokenizer.from_pretrained(MODEL); tok.padding_side="left"
@@ -71,6 +69,6 @@ def main():
         verdict = "STRONG" if (rE>=0.6 and dE>=3) else ("TOKEN-ONLY" if rT>=0.6 else "WEAK")
         print(f"  [{cname:8s} N={N:2d}] SENT-END rsa={rE:+.2f} eff-dim={dE:.1f} | DAY-TOK rsa={rT:+.2f} eff-dim={dT:.1f}  -> {verdict}",flush=True)
     del model; torch.cuda.empty_cache()
-    json.dump({"model":MODEL,"L":L,"nl":nl,"res":out},open(os.path.join(data_dir("geometry"), f"pretrained_verify_{tag}.json"),"w"),indent=2)
-    print("SAVED",os.path.abspath(os.path.join(data_dir("geometry"), f"pretrained_verify_{tag}.json")),flush=True)
+    json.dump({"model":MODEL,"L":L,"nl":nl,"res":out},open(f"results/geometry/pretrained_verify_{tag}.json","w"),indent=2)
+    print("SAVED",os.path.abspath(f"results/geometry/pretrained_verify_{tag}.json"),flush=True)
 if __name__=="__main__": main()

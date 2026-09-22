@@ -8,13 +8,11 @@ import os,sys,numpy as np,torch
 from scipy.stats import spearmanr
 from transformers import AutoTokenizer,AutoModelForCausalLM,AutoConfig
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 MODEL=sys.argv[1]; NSCR=int(sys.argv[sys.argv.index("--nscr")+1]) if "--nscr" in sys.argv else 12
 NTPL=int(sys.argv[sys.argv.index("--ntpl")+1]) if "--ntpl" in sys.argv else 3
 FRACD=0.75; KS=list(range(1,7)); base=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];N=7
 TPLS=["What is {k} steps after {e}?","From {e}, advance {k} steps. Which item?","{e} plus {k} steps =?","Starting at {e}, move {k} steps forward. Result?"]
-tag=MODEL.split("/")[-1]; os.makedirs(data_dir("behavior"),exist_ok=True)
+tag=MODEL.split("/")[-1]; os.makedirs("results/behavior",exist_ok=True)
 def deftext(order):
     numbered="\n".join(f"{i+1}. {order[i]}" for i in range(N))
     return ("You are operating in a REDEFINED calendar. The ONLY valid order applies below; the normal order does NOT apply."
@@ -59,9 +57,9 @@ def main():
         allc[si]=(cents,ip,iseq); stats.append(dict(si=si,rsa=float(rsa),dRSA=float(dr),closure=float(clos),X=int(X)))
         print(f"  scr{si+1}/{NSCR}: RSA={rsa:+.2f} dRSA={dr:+.2f} clos={clos:.2f} X={X}",flush=True)
     del model; torch.cuda.empty_cache()
-    np.savez(os.path.join(data_dir("behavior"), f"naturalgeom_{tag}.npz"),**{f"c{si}":allc[si][0] for si in range(NSCR)},
+    np.savez(f"results/behavior/naturalgeom_{tag}.npz",**{f"c{si}":allc[si][0] for si in range(NSCR)},
              imp=np.array([allc[si][1] for si in range(NSCR)]))
-    import json; json.dump(stats,open(os.path.join(data_dir("behavior"), f"naturalgeom_{tag}.json"),"w"),indent=2)
+    import json; json.dump(stats,open(f"results/behavior/naturalgeom_{tag}.json","w"),indent=2)
     rsas=[s["rsa"] for s in stats]; print(f"== {tag} pre-thinking, {NSCR} scrambles: RSA {np.mean(rsas):+.2f}±{np.std(rsas):.2f} | dRSA {np.mean([s['dRSA'] for s in stats]):+.2f} | clos {np.mean([s['closure'] for s in stats]):.2f}",flush=True)
     # grid plot
     import math; cols=4; rws=math.ceil(NSCR/cols); fig,ax=plt.subplots(rws,cols,figsize=(3.1*cols,3.1*rws)); ax=np.array(ax).reshape(-1)
@@ -74,5 +72,5 @@ def main():
         a.set_xticks([]);a.set_yticks([]); a.set_title(f"scr{si+1} RSA={stats[si]['rsa']:+.2f}",fontsize=8)
     for k in range(NSCR,len(ax)): ax[k].set_axis_off()
     fig.suptitle(f"{tag} PRE-THINKING geometry (natural prompt, last-token pre-gen), {NSCR} imposed orders — imposed order in PC1-2 (red=wrap edge)",fontsize=11)
-    fig.tight_layout();o=os.path.join(data_dir("behavior"), f"FIG_naturalgeom_{tag}.png");fig.savefig(o,dpi=125);print("SAVED",os.path.abspath(o),flush=True)
+    fig.tight_layout();o=f"results/behavior/FIG_naturalgeom_{tag}.png";fig.savefig(o,dpi=125);print("SAVED",os.path.abspath(o),flush=True)
 if __name__=="__main__": main()

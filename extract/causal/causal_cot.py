@@ -13,13 +13,11 @@ needed) — then let the model generate OPEN-ENDED (thinking on, no "answer only
 
 Saves FULL generation traces + per-pair flags (Standard #11).
 Usage: python -u causal_cot.py <hf_model> [--layers 18,27] [--maxnew 400] [--nscr 1] [--concept days]
-Out: data_dir("causal")/causalcot_<tag>.json + data_dir("causal")/FIG_causalcot_<tag>.png
+Out: results/causal/causalcot_<tag>.json + results/causal/FIG_causalcot_<tag>.png
 """
 import os, sys, json, re, numpy as np, torch, torch.nn as nn
 from transformers import AutoTokenizer, AutoModelForCausalLM, AutoConfig
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 
 MODEL=sys.argv[1]
 NSCR=int(sys.argv[sys.argv.index("--nscr")+1]) if "--nscr" in sys.argv else 1
@@ -29,8 +27,8 @@ LAYERS_ARG=[int(x) for x in sys.argv[sys.argv.index("--layers")+1].split(",")] i
 ENT={"days":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]}
 base=ENT[CONCEPT]; N=len(base)
 TPL="What is 1 step after {e}?"
-tag=MODEL.split("/")[-1]; os.makedirs(data_dir("causal"),exist_ok=True)
-OUT=os.path.join(data_dir("causal"), f"causalcot_{tag}.json")
+tag=MODEL.split("/")[-1]; os.makedirs("results/causal",exist_ok=True)
+OUT=f"results/causal/causalcot_{tag}.json"
 
 def make_def(order):
     numbered="\n".join(f"{i+1}. {order[i]}" for i in range(N))
@@ -86,7 +84,7 @@ def main():
     LAYERS=LAYERS_ARG if LAYERS_ARG else sorted({max(1,min(nl-1,int(round(f*nl)))) for f in [0.1,0.2,0.3,0.45,0.6,0.7,0.75,0.85,0.95]})
     print(f"CAUSAL-COT {MODEL} concept={CONCEPT} nscr={NSCR} nl={nl} layers={LAYERS} maxnew={MAXNEW} (OPEN-ENDED, thinking ON)",flush=True)
     # --- block-level checkpoint/resume: each (context,scramble) block saved to a partial as it completes ---
-    PARTIAL=os.path.join(data_dir("causal"), f"causalcot_{tag}_partial.json")
+    PARTIAL=f"results/causal/causalcot_{tag}_partial.json"
     done=json.load(open(PARTIAL)) if os.path.exists(PARTIAL) else {}
     todo=[(c,si) for c in ["imposed","natural"] for si in range(NSCR) if f"{c}|{si}" not in done]
     print(f"CHECKPOINT: {len(done)}/{2*NSCR} blocks done; todo={todo} (partial={PARTIAL})",flush=True)
@@ -189,6 +187,6 @@ def plot(R):
     ax2.set_title(f"Dissociation @L{causal_L} (CoT, clean subset)\npatch survives open-ended reasoning"); ax2.legend(fontsize=8)
     for i,v in enumerate([imp_self,nat_self]): ax2.text(i-w/2,v+.02,f"{v:.2f}",ha="center",fontsize=9)
     R["causal_layer"]=int(causal_L)
-    plt.tight_layout(); fn=os.path.join(data_dir("causal"), f"FIG_causalcot_{R['model'].split('/')[-1]}.png"); plt.savefig(fn,dpi=130); print("FIG",os.path.abspath(fn),"causal_L",causal_L,flush=True)
+    plt.tight_layout(); fn=f"results/causal/FIG_causalcot_{R['model'].split('/')[-1]}.png"; plt.savefig(fn,dpi=130); print("FIG",os.path.abspath(fn),"causal_L",causal_L,flush=True)
 
 if __name__=="__main__": main()

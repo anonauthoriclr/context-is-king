@@ -8,8 +8,6 @@ import os,sys,json,numpy as np,torch,glob
 from scipy.stats import spearmanr
 from transformers import AutoTokenizer,AutoModelForCausalLM,AutoConfig
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 NSCR=int(sys.argv[sys.argv.index("--nscr")+1]) if "--nscr" in sys.argv else 2
 FRACD=0.75; KS=list(range(1,7)); NTPL=3
 ENT={"days":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
@@ -76,11 +74,11 @@ def main():
                 SUMM.setdefault(tag,{}).setdefault(cond,[]).append(dict(si=si,dRSA=float(dr),closure=float(wrap/(interior+1e-9)),rsa=float(rsa),X=int(X)))
                 if si==0: CACHE[(tag,cond)]=(cents,ip,iseq)
         del model; torch.cuda.empty_cache()
-        np.savez(os.path.join(data_dir("behavior"), f"wrap2x2_{tag}_{CONCEPT}.npz"),R=np.stack(Rall),COND=np.array(Call),SI=np.array(Sall),ENT=np.array(Eall),
+        np.savez(f"results/behavior/wrap2x2_{tag}_{CONCEPT}.npz",R=np.stack(Rall),COND=np.array(Call),SI=np.array(Sall),ENT=np.array(Eall),
                  imp=np.array([[ {x.lower():i for i,x in enumerate(orders[si])}[e.lower()] for e in base] for si in range(NSCR)]),conds=np.array(CONDS),L=L)
         s=SUMM[tag]; pr=lambda c:f"dRSA={np.mean([r['dRSA'] for r in s[c]]):+.2f} clos={np.mean([r['closure'] for r in s[c]]):.2f} X={np.mean([r['X'] for r in s[c]]):.1f}"
         print(f"  {tag}: list[{pr('list')}] list_wrap[{pr('list_wrap')}] adj_nowrap[{pr('adj_nowrap')}] adj[{pr('adj')}]",flush=True)
-    json.dump({m:{c:SUMM[m][c] for c in CONDS} for m in SUMM},open(os.path.join(data_dir("behavior"), f"wrap2x2_summary_{CONCEPT}.json"),"w"),indent=2)
+    json.dump({m:{c:SUMM[m][c] for c in CONDS} for m in SUMM},open(f"results/behavior/wrap2x2_summary_{CONCEPT}.json","w"),indent=2)
     # grid plot: rows=models, cols=conditions
     fig,ax=plt.subplots(len(MODELS),len(CONDS),figsize=(3.2*len(CONDS),3.2*len(MODELS))); ax=np.atleast_2d(ax)
     for r,M in enumerate(MODELS):
@@ -95,5 +93,5 @@ def main():
             if c==0: a.set_ylabel(tag.replace('gemma-4-','G').replace('Qwen3.5-','Q'),fontsize=9)
             a.text(.5,-.07,f"dRSA={dr:+.2f} clos={cl:.2f} X={X}",transform=a.transAxes,ha="center",fontsize=7)
     fig.suptitle("CONTENT vs FORMAT 2x2 — wrap flips topology WITHIN format? (rows=models, cols: numbered{list,list_wrap} | edge{adj_nowrap,adj})",fontsize=11)
-    fig.tight_layout(); o=os.path.join(data_dir("behavior"), f"FIG_wrap2x2_{CONCEPT}.png"); fig.savefig(o,dpi=125); print("SAVED",os.path.abspath(o),flush=True)
+    fig.tight_layout(); o=f"results/behavior/FIG_wrap2x2_{CONCEPT}.png"; fig.savefig(o,dpi=125); print("SAVED",os.path.abspath(o),flush=True)
 if __name__=="__main__": main()

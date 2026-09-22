@@ -3,7 +3,7 @@
 # then refresh the unified CoT k-curve plot. Forward-only captures (cheap).
 set -u
 cd "$(dirname "$0")"
-PY="${VENV:-/path/to/gemma4u-venv/bin/python}"
+PY="${VENV_UNIFIED:-python}"
 echo "waiting for CoT sweep (defladder_cot.py) to finish... $(date)"
 while pgrep -f defladder_cot.py >/dev/null; do sleep 15; done
 echo "GPU free $(date) — rendering CoT geometry rings"

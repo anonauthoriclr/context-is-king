@@ -2,12 +2,10 @@
 """Interactive 3D PCA POINT-CLOUD demo of an imposed HIERARCHY (spin it yourself). One tree, many neutral paraphrases →
 dense per-sample residual cloud; PCA→3D; plotly scatter3d colored by depth + parent edges + rich hover (token, depth,
 path). Self-contained HTML (plotly inlined). Neutral queries (ask nothing structural) = the intrinsic rendering.
-Usage: python demo_tree.py <hf_model> [--depth 3] [--ntpl 24]  ->  data_dir("geometry")/demo_tree_<tag>_d<D>.html"""
+Usage: python demo_tree.py <hf_model> [--depth 3] [--ntpl 24]  ->  results/geometry/demo_tree_<tag>_d<D>.html"""
 import sys, os, numpy as np, torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, AutoConfig
 import plotly.graph_objects as go
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 MODEL=sys.argv[1]
 D=int(sys.argv[sys.argv.index("--depth")+1]) if "--depth" in sys.argv else 3
 NTPL=int(sys.argv[sys.argv.index("--ntpl")+1]) if "--ntpl" in sys.argv else 24
@@ -56,7 +54,7 @@ del model; torch.cuda.empty_cache()
 R=np.array(R,np.float32); NODE=np.array(NODE)
 mu=R.mean(0); U,S,Vt=np.linalg.svd(R-mu,full_matrices=False); P=(R-mu)@Vt[:3].T; ev=(S**2/(S**2).sum())[:3]
 tag=MODEL.split("/")[-1]
-np.savez(os.path.join(data_dir("geometry"), f"demo_tree_{tag}_d{D}.npz"),R=R.astype(np.float16),NODE=NODE,perm=np.array(perm),P=P,L=L)
+np.savez(f"results/geometry/demo_tree_{tag}_d{D}.npz",R=R.astype(np.float16),NODE=NODE,perm=np.array(perm),P=P,L=L)
 # hover: token + depth + path root->leaf
 def path(n):
     a=anc(n)[::-1]; return " → ".join(perm[x] for x in a)
@@ -77,5 +75,5 @@ fig.update_layout(title=f"Spin the imposed hierarchy — depth-{D} tree, {N} nod
     f"<sub>{tag}, arbitrary tokens, NEUTRAL queries (ask nothing); per-sample residuals, 3D PCA "
     f"(EV {ev.round(2)}). Color = tree depth. Drag to rotate.</sub>",
     scene=dict(xaxis_title="PC1",yaxis_title="PC2",zaxis_title="PC3"),template="plotly_white",width=950,height=800)
-out=os.path.join(data_dir("geometry"), f"demo_tree_{tag}_d{D}.html"); fig.write_html(out,include_plotlyjs=True,full_html=True)
+out=f"results/geometry/demo_tree_{tag}_d{D}.html"; fig.write_html(out,include_plotlyjs=True,full_html=True)
 print("WROTE",out,"| points",len(P),"| EV",ev.round(3),flush=True)

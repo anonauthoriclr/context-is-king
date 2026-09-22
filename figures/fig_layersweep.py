@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Appendix figure: the imposed-order geometry is a broad late-network plateau, not a single layer.
-Full all-layer sweep of the entity-layout probe (days) for the two flagship models. We plot imposed-order RSA
+Full all-layer sweep of the relational-geometry measure (days) for the two flagship models. We plot imposed-order RSA
 and residual natural-order RSA at every layer vs network depth. The probe layer used throughout, 0.75*depth, is
 marked; it sits on the plateau and below each model's own peak (so it is not tuned to the best layer).
 
@@ -12,10 +12,10 @@ import matplotlib.pyplot as plt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 _OUT = os.environ.get("CIK_OUT", os.path.join(HERE, "output")); os.makedirs(_OUT, exist_ok=True)
-DATA = os.environ.get("CIK_DATA", os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data")))
+DATA = os.environ.get("CIK_DATA", os.path.normpath(os.path.join(HERE, "..", "data")))
 G = os.path.join(DATA, "geometry") + "/"
-MODELS = [("Gemma-4-31B", "layer_sweep_gemma-4-31B-it.json", "#1b7837"),
-          ("Qwen-3.5-27B", "qwen_layer_sweep.json", "#762a83")]
+MODELS = [("Gemma-31B", "layer_sweep_gemma-4-31B-it.json", "#1b7837"),
+          ("Qwen-27B", "qwen_layer_sweep.json", "#762a83")]
 INK = "#1d2430"
 fig, ax = plt.subplots(figsize=(6.4, 4.0)); fig.patch.set_facecolor("white")
 ax.axhline(0, color="0.8", lw=0.6)
@@ -39,5 +39,5 @@ fig.savefig(out + ".pdf", bbox_inches="tight"); fig.savefig(out + ".png", dpi=17
 print("WROTE", out)
 for name, fn, _ in MODELS:
     d = json.load(open(G + fn)); nl = d["nL"]; imp = np.array(d["scr_imp"], float)
-    L = int(round(0.75 * nl))
+    L = int(round(0.75 * (nl - 1)))
     print(f"  {name}: nL={nl} RSA@0.75={imp[L]:.2f} peak={np.nanmax(imp):.2f}@L{int(np.nanargmax(imp))}")

@@ -50,7 +50,10 @@ for i in range(4):
 for p in pts: node(ax, p, c=IMP)
 # wrap edge: dashed, closes last->first
 arrow(ax, pts[-1], pts[0], c=WRAP, ls=(0, (4, 2)), lw=1.6, rad=-0.9)
-ax.text(0.5, 0.02, "wrap edge (optional)", fontsize=8.5, color=WRAP, ha="center", style="italic")
+ax.text(
+    0.5, -0.055, "wrap edge (optional)", fontsize=8.5, color=WRAP,
+    ha="center", va="top", style="italic", clip_on=False,
+)
 ax.text(0.5, 0.90, "open chain", fontsize=8.5, color=MUT, ha="center")
 ax.text(0.5, 0.79, "$+$ wrap edge $\\Rightarrow$ cycle", fontsize=9.5, color=WRAP, ha="center")
 

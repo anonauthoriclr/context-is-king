@@ -1,9 +1,6 @@
 import os,glob,numpy as np
 from scipy.stats import spearmanr
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
-import os, sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 base=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];N=7
 rng=np.random.default_rng(0); orders=[list(rng.permutation(base)) for _ in range(3)]
 ORDER=["gemma-4-E2B-it","gemma-4-E4B-it","gemma-4-12B-it","gemma-4-31B-it","Qwen3.5-4B","Qwen3.5-9B","Qwen3.5-27B","Llama-3.1-8B-Instruct"]
@@ -18,10 +15,10 @@ def crs(pts,seq):
             if set(E[a])&set(E[b]):continue
             if _in(pts[E[a][0]],pts[E[a][1]],pts[E[b][0]],pts[E[b][1]]):c+=1
     return c
-MODE="adj"; avail=[t for t in ORDER if glob.glob(os.path.join(data_dir("geometry","cache"), f"defladder_{t}_days_{MODE}_s0_L*.npz"))]
+MODE="adj"; avail=[t for t in ORDER if glob.glob(f"results/geometry/cache/defladder_{t}_days_{MODE}_s0_L*.npz")]
 n=len(avail);fig,ax=plt.subplots(1,n,figsize=(3.3*n,3.7));ax=np.atleast_1d(ax)
 for j,t in enumerate(avail):
-    f=glob.glob(os.path.join(data_dir("geometry","cache"), f"defladder_{t}_days_{MODE}_s0_L*.npz"))[0]
+    f=glob.glob(f"results/geometry/cache/defladder_{t}_days_{MODE}_s0_L*.npz")[0]
     d=np.load(f,allow_pickle=True);A=d["A"].astype(np.float32);ent=d["ent"]
     cents=np.stack([A[ent==e].mean(0) for e in base]);ip=[{x.lower():i for i,x in enumerate(orders[0])}[e.lower()] for e in base];iseq=list(np.argsort(ip))
     rsa=spearmanr(cosM(cents)[np.triu_indices(N,1)],cyc(ip)[np.triu_indices(N,1)]).correlation
@@ -30,4 +27,4 @@ for j,t in enumerate(avail):
     for i,e in enumerate(base): a.annotate(e[:3],(P[i,0],P[i,1]),fontsize=8,ha="center",va="center")
     a.set_xticks([]);a.set_yticks([]);a.set_title(f"{t.replace('gemma-4-','G').replace('Qwen3.5-','Q').replace('Llama-3.1-8B-Instruct','L8')}\nimpRSA={rsa:+.2f} X={X}",fontsize=10)
 fig.suptitle("ADJACENCY format — k-mixed one-shot imposed ring (si=0), connected in imposed order (does it CLOSE vs the list-lines?)",fontsize=11)
-fig.tight_layout();o=os.path.join(data_dir("behavior"), "FIG_adj_rings_days.png");fig.savefig(o,dpi=130);print("SAVED",os.path.abspath(o))
+fig.tight_layout();o="results/behavior/FIG_adj_rings_days.png";fig.savefig(o,dpi=130);print("SAVED",os.path.abspath(o))

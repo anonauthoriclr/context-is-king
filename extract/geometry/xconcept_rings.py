@@ -1,9 +1,6 @@
 import sys,glob,numpy as np
 from scipy.stats import spearmanr
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
-import os, sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 ENT={"days":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
      "months":["January","February","March","April","May","June","July","August","September","October","November","December"],
      "zodiac":["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"],
@@ -19,7 +16,7 @@ for r,C in enumerate(CC):
     base=ENT[C];N=len(base);order=list(np.random.default_rng(0).permutation(base))
     ip=[{x.lower():i for i,x in enumerate(order)}[e.lower()] for e in base];iseq=list(np.argsort(ip))
     for cc,mode in enumerate(["list","adj"]):
-        a=ax[r,cc]; fs=glob.glob(os.path.join(data_dir("geometry","cache"), f"defladder_{TAG}_{C}_{mode}_s0_L*.npz"))
+        a=ax[r,cc]; fs=glob.glob(f"results/geometry/cache/defladder_{TAG}_{C}_{mode}_s0_L*.npz")
         if not fs: a.set_axis_off(); a.set_title(f"{C}/{mode}: missing",fontsize=8); continue
         d=np.load(fs[0],allow_pickle=True);A=d["A"].astype(np.float32);ent=d["ent"]
         cents=np.stack([A[ent==e].mean(0) for e in base]);D=cosM(cents,N)
@@ -33,4 +30,4 @@ for r,C in enumerate(CC):
         ver="CYCLE" if (drv>0 and clos<1.3) else "LINE"
         a.set_title(f"{C} · {'numbered list' if mode=='list' else 'adjacency+wrap'}\ndRSA={drv:+.2f} clos={clos:.2f} → {ver}",fontsize=8.5,color="#070" if ver=="CYCLE" else "#900")
 fig.suptitle(f"{TAG}: centroid geometry per concept — LIST (left) vs ADJ+wrap (right). red=wrap edge.",fontsize=11)
-fig.tight_layout();o=os.path.join(data_dir("behavior"), f"FIG_xconcept_rings_{TAG}.png");fig.savefig(o,dpi=130);print("SAVED",o)
+fig.tight_layout();o=f"results/behavior/FIG_xconcept_rings_{TAG}.png";fig.savefig(o,dpi=130);print("SAVED",o)

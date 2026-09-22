@@ -6,12 +6,10 @@ rook (Manhattan) templates vs a 1-D reading-order template (the competitor) + fi
 PASS (native 2-D store): 2-D beats 1-D and the label-shuffle null (empirical p). KEY CONFOUND = tokenization: 'a1','a2'
 share the file letter -> --opaque re-encodes each square as a distinct arbitrary token; if 2-D survives, it is not lexical.
 Usage: python -u geom_natural2d.py <hf_model> [--size 3] [--opaque] [--qset neutral|king]
-Out: data_dir("geometry")/nat2d_<tag>.json (+ .npz)"""
+Out: results/geometry/nat2d_<tag>.json (+ .npz)"""
 import os, sys, json, numpy as np, torch
 from scipy.stats import spearmanr
 from transformers import AutoTokenizer, AutoModelForCausalLM, AutoConfig
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 
 MODEL=sys.argv[1]
 def arg(flag,default,cast=str): return cast(sys.argv[sys.argv.index(flag)+1]) if flag in sys.argv else default
@@ -36,7 +34,7 @@ QW={"neutral":["On a chessboard, consider the square {e}.","Look at the square {
 TPLS=QW[QSET]; SUFFIX="" if QSET=="neutral" else "\n\nAnswer with ONLY the square name(s), nothing else."
 PRE=("" if not OPAQUE else "You are operating on a labeled grid; treat each name as a fixed cell identifier.\n")
 tag=MODEL.split("/")[-1]+f"_{SIZE}x{SIZE}"+("_opaque" if OPAQUE else "")+("" if QSET=="neutral" else f"_{QSET}")
-os.makedirs(data_dir("geometry"),exist_ok=True); OUT=os.path.join(data_dir("geometry"), f"nat2d_{tag}.json")
+os.makedirs("results/geometry",exist_ok=True); OUT=f"results/geometry/nat2d_{tag}.json"
 
 def render(tok,c):
     try: return tok.apply_chat_template([{"role":"user","content":PRE+c+SUFFIX}],add_generation_prompt=True,tokenize=False,enable_thinking=False)
@@ -76,7 +74,7 @@ def main():
               rsa=rsa,best_template=best,dRSA_2D_minus_1D=rsa["king2D"]-rsa["line1D"],
               null_mean=float(nullv.mean()),p_emp_2D=p_emp)
     json.dump(summ,open(OUT,"w"),indent=2)
-    np.savez(os.path.join(data_dir("geometry"), f"nat2d_{tag}.npz"),cents=cents,squares=np.array(SQ),
+    np.savez(f"results/geometry/nat2d_{tag}.npz",cents=cents,squares=np.array(SQ),
              coord=np.array([COORD[s] for s in SQ]),L=L)
     print(f"== {tag}: king2D={rsa['king2D']:+.2f} rook2D={rsa['rook2D']:+.2f} line1D={rsa['line1D']:+.2f} "
           f"file={rsa['file']:+.2f} rank={rsa['rank']:+.2f} | best={best} dRSA(2D-1D)={rsa['king2D']-rsa['line1D']:+.2f} "

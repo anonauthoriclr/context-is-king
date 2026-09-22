@@ -9,13 +9,11 @@ k_dst (clean flip). ALL k-pairs k in {1..KMAX} (operator: "show all pairs work")
 layer + layer sweep. Controls: random-donor at k-slot; k-donor at a non-k slot.
 
 Usage: python -u causal_k.py <hf_model> [--nscr 2] [--kmax 6] [--concept days]
-Out: data_dir("causal")/causalk_<tag>.json + data_dir("causal")/FIG_causalk_<tag>.png
+Out: results/causal/causalk_<tag>.json + results/causal/FIG_causalk_<tag>.png
 """
 import os, sys, json, re, numpy as np, torch, torch.nn as nn
 from transformers import AutoTokenizer, AutoModelForCausalLM, AutoConfig
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 
 MODEL=sys.argv[1]
 NSCR=int(sys.argv[sys.argv.index("--nscr")+1]) if "--nscr" in sys.argv else 2
@@ -25,8 +23,8 @@ FRACD=0.75
 ENT={"days":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]}
 base=ENT[CONCEPT]; N=len(base); KS=list(range(1,KMAX+1))
 TPL="Advance {k} steps from {e}. Which item?"
-tag=MODEL.split("/")[-1]; os.makedirs(data_dir("causal"),exist_ok=True)
-OUT=os.path.join(data_dir("causal"), f"causalk_{tag}.json")
+tag=MODEL.split("/")[-1]; os.makedirs("results/causal",exist_ok=True)
+OUT=f"results/causal/causalk_{tag}.json"
 
 def make_def(order):
     numbered="\n".join(f"{i+1}. {order[i]}" for i in range(N))
@@ -201,6 +199,6 @@ def plot(R):
             if not np.isnan(M[i,j]): ax2.text(j,i,f"{M[i,j]:.2f}",ha="center",va="center",color="w",fontsize=7)
     fig.colorbar(im,ax=ax2,fraction=.046)
     R["causal_layer"]=int(causal_L)
-    plt.tight_layout(); fn=os.path.join(data_dir("causal"), f"FIG_causalk_{R['model'].split('/')[-1]}.png"); plt.savefig(fn,dpi=130); print("FIG",os.path.abspath(fn),"causal_L",causal_L,flush=True)
+    plt.tight_layout(); fn=f"results/causal/FIG_causalk_{R['model'].split('/')[-1]}.png"; plt.savefig(fn,dpi=130); print("FIG",os.path.abspath(fn),"causal_L",causal_L,flush=True)
 
 if __name__=="__main__": main()

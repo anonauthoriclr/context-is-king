@@ -1,6 +1,6 @@
 #!/bin/bash
 set -u; cd "$(dirname "$0")"
-PY="${VENV:-/path/to/gemma4-venv/bin/python}"
+PY="${VENV:-python}"
 LOG=results/geometry/random2.log
 echo "=== random rerun start $(date) ===" | tee -a "$LOG"
 $PY -u topo_driver.py Qwen/Qwen3.5-27B --configs random:0:0,random:0:2 --nscr 6 2>&1 | tee -a "$LOG"

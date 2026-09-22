@@ -18,8 +18,6 @@ import os, sys, json, numpy as np, torch
 from scipy.stats import spearmanr
 from transformers import AutoTokenizer, AutoModelForCausalLM, AutoConfig
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 
 MODEL=sys.argv[1]; IS_BASE="--base" in sys.argv
 NSCR=int(sys.argv[sys.argv.index("--nscr")+1]) if "--nscr" in sys.argv else 3
@@ -34,8 +32,8 @@ ENT={"days":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sund
 TPLS=["What is {k} steps after {e}?","{k} steps after {e} is?","From {e}, advance {k} steps. Which item?",
       "Starting at {e}, move {k} steps forward. Result?","{e} plus {k} steps =?","Advance {k} from {e}. Which one?"]
 tag=MODEL.split("/")[-1]+("_base" if IS_BASE else "")
-CACHE=data_dir("geometry","cache"); os.makedirs(CACHE,exist_ok=True)
-os.makedirs(data_dir("geometry"),exist_ok=True)
+CACHE="results/geometry/cache"; os.makedirs(CACHE,exist_ok=True)
+os.makedirs("results/geometry",exist_ok=True)
 
 # ---- the controlled variable: three definition rungs (order given in decreasing detail) ----
 def make_def(mode,order,rng):
@@ -139,8 +137,8 @@ def main():
             if ri==0: a.set_title(f"{mode}\nimpRSA={s['imp_mean']:+.2f}±{s['imp_std']:.2f} natret={s['nat_ret']:+.2f}\ncross imp={s['imp_cross']:.1f} nat={s['nat_cross']:.1f}",fontsize=9)
             if ci==0: a.set_ylabel(name,fontsize=10)
     fig.suptitle(f"{tag} — {CONCEPT}: geometry vs how much order is spelled out (PC1-2, scramble-0; titles avg over {NSCR})",fontsize=11)
-    fig.tight_layout(); out=os.path.join(data_dir("geometry"), f"FIG_defladder_{tag}_{CONCEPT}.png"); fig.savefig(out,dpi=130); print("SAVED",os.path.abspath(out),flush=True)
+    fig.tight_layout(); out=f"results/geometry/FIG_defladder_{tag}_{CONCEPT}.png"; fig.savefig(out,dpi=130); print("SAVED",os.path.abspath(out),flush=True)
     json.dump({"model":MODEL,"concept":CONCEPT,"base":IS_BASE,"nscr":NSCR,"L":int(L),"summary":summary},
-              open(os.path.join(data_dir("geometry"), f"defladder_{tag}_{CONCEPT}.json"),"w"),indent=2)
+              open(f"results/geometry/defladder_{tag}_{CONCEPT}.json","w"),indent=2)
 
 if __name__=="__main__": main()

@@ -4,8 +4,8 @@
 set -u
 cd "$(dirname "$0")"
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
-G="${VENV:-/path/to/gemma4-venv/bin/python}"
-GU="${VENV:-/path/to/gemma4u-venv/bin/python}"
+G="${VENV:-python}"
+GU="${VENV_UNIFIED:-python}"
 
 run() {  # $1=python  $2=hf_model  $3=tag
   out="results/causal/causalk_$3.json"

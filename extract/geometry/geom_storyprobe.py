@@ -4,12 +4,10 @@ embed the day MID-sentence (content after it, so the day is NOT the final token)
 (a) the day-token position (the day's contextualized representation), and (b) the genuine sentence-final token (not the
 day). If imposed-cyclic RSA dominates natural at either readout under these rich probes, the reorganization is intrinsic,
 not cued by a k-hop question and not an artifact of the day being the last token. {imposed,natural} x {neutral,complex}.
-Cone-preserving null. Usage: python -u geom_storyprobe.py <hf_model> [--nscr 4]   Out: data_dir("geometry")/storyprobe_<tag>.json"""
+Cone-preserving null. Usage: python -u geom_storyprobe.py <hf_model> [--nscr 4]   Out: results/geometry/storyprobe_<tag>.json"""
 import os, sys, json, numpy as np, torch
 from scipy.stats import spearmanr
 from transformers import AutoTokenizer, AutoModelForCausalLM, AutoConfig
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 
 MODEL=sys.argv[1]
 NSCR=int(sys.argv[sys.argv.index("--nscr")+1]) if "--nscr" in sys.argv else 4
@@ -42,7 +40,7 @@ def last_subseq_end(ids, sub):  # end index (inclusive) of the LAST occurrence o
     return best
 
 def main():
-    tag=MODEL.split("/")[-1]; os.makedirs(data_dir("geometry"),exist_ok=True); OUT=os.path.join(data_dir("geometry"), f"storyprobe_{tag}.json")
+    tag=MODEL.split("/")[-1]; os.makedirs("results/geometry",exist_ok=True); OUT=f"results/geometry/storyprobe_{tag}.json"
     cfg=AutoConfig.from_pretrained(MODEL); nl=getattr(cfg,"num_hidden_layers",None) or getattr(getattr(cfg,"text_config",None),"num_hidden_layers",None)
     L=int(round(FRACD*nl)); print(f"STORYPROBE-v2 {MODEL} L={L}/{nl} nscr={NSCR}",flush=True)
     tok=AutoTokenizer.from_pretrained(MODEL); tok.padding_side="left"

@@ -1,7 +1,7 @@
 #!/bin/bash
 # After the Gemma suite (.s4): small-Gemma capability gradient (E2B, E4B; snap+CoT) THEN Qwen-27B (snap+CoT). gemma4-venv.
-cd "${ROOT:-/path/to/context-is-king/extract}"
-V="${VENV:-/path/to/gemma4-venv}"
+cd "${ROOT:?Set ROOT to the extraction working directory}"
+V="${VENV:?Set VENV to the virtual-environment directory}"
 export HF_HUB_DISABLE_PROGRESS_BARS=1 TRANSFORMERS_VERBOSITY=error
 D=results/causal; log(){ echo "[$(date +%H:%M:%S)] $*"; }
 gpu_free(){ while nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits | awk '{exit ($1>5000)?0:1}'; do sleep 15; done; }

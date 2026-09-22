@@ -17,26 +17,29 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.environ.get("CIK_OUT", os.path.join(HERE, "output"))
 DATA = os.environ.get("CIK_DATA", os.path.normpath(os.path.join(HERE, "..", "data")))
 
-# (paper label, script) — the canonical figure producers.
+# (paper label, script, extra arguments) — the canonical figure producers,
+# in the order in which they appear in the current ICLR manuscript.
 FIGURES = [
-    ("fig:flip",       "fig1_flip.py"),
-    ("fig:defs",       "fig_defs.py"),
-    ("fig:dominance",  "fig_dominance.py"),
-    ("fig:hierarchy",  "fig_hierarchy.py"),
-    ("fig:possweep",   "geom_possweep_plot.py"),
-    ("fig:layersweep", "fig_layersweep.py"),
-    ("fig:kmarg",      "k_marg_plot.py"),
-    ("fig:behavior",   "fig_behavior.py"),
-    ("fig:regimes",    "fig_regimes.py"),
-    ("fig:topology",   "fig_topology.py"),
-    ("fig:shapes",     "build_paper_fig.py"),
-    ("fig:queryreloc", "demo_tree_queryfig.py"),
+    ("fig:possweep",   "fig_possweep.py", []),
+    ("fig:defs",       "fig_defs.py", []),
+    ("fig:dominance",  "fig_dominance.py", []),
+    ("fig:flip",       "fig1_flip.py", []),
+    ("fig:hierarchy",  "fig_hierarchy.py", []),
+    ("fig:shapes",     "build_abstract_fig.py", []),
+    ("fig:crossover",  "fig_crossover.py", []),
+    ("fig:layersweep", "fig_layersweep.py", []),
+    ("fig:kmarg",      "k_marg_plot.py", []),
+    ("fig:behavior",   "fig_behavior.py", []),
+    ("fig:regimes",    "fig_regimes_aaai.py", []),
+    ("fig:crossorder", "fig_cross_order_binding.py", []),
+    ("fig:queryreloc", "demo_tree_queryfig.py", ["--paper"]),
+    ("fig:topology",   "fig_topology.py", []),
 ]
 
 
 def main() -> int:
     if "--list" in sys.argv:
-        for label, script in FIGURES:
+        for label, script, _ in FIGURES:
             print(f"{label:16} {script}")
         return 0
 
@@ -46,12 +49,12 @@ def main() -> int:
     print(f"output: {OUT}\n")
 
     ok, fail = [], []
-    for label, script in FIGURES:
+    for label, script, args in FIGURES:
         path = os.path.join(HERE, script)
         if not os.path.exists(path):
             fail.append((label, script, "script missing"))
             continue
-        r = subprocess.run([sys.executable, path], cwd=HERE, env=env,
+        r = subprocess.run([sys.executable, path, *args], cwd=HERE, env=env,
                            capture_output=True, text=True)
         if r.returncode == 0:
             ok.append((label, script))

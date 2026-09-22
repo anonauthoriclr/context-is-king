@@ -9,9 +9,6 @@ Prints one block per file so we can see where the two rules diverge and whether 
 Run: python reconcile_causal.py"""
 import json, glob, numpy as np
 from collections import OrderedDict
-import os, sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 
 def avg(scrs, L, k):
     vs=[s["layers"][str(L)][k] for s in scrs if str(L) in s["layers"]]
@@ -55,7 +52,7 @@ def fmt(r):
             f"nat_own={g(r['nat_own'])} ptok={g(r['ptok'])} rdon={g(r['rdon'])}")
 
 def main():
-    files=sorted(glob.glob(os.path.join(data_dir("causal"), "causaluse_*.json")))
+    files=sorted(glob.glob("results/causal/causaluse_*.json"))
     # order: days first grouped by family/scale, then months
     def key(f):
         return (("months" in f), f)

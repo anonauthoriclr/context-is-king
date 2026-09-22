@@ -8,8 +8,6 @@ NO CoT here (different regime — deferred, needs its own capture + flag-invaria
 Usage: python -u defladder_acc.py <hf_model> --concept days [--nscr 2] [--modes list,adj] [--maxnew 64] [--base]"""
 import os, sys, json, re, numpy as np, torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 
 MODEL=sys.argv[1]; IS_BASE="--base" in sys.argv
 NSCR=int(sys.argv[sys.argv.index("--nscr")+1]) if "--nscr" in sys.argv else 2
@@ -25,7 +23,7 @@ ENT={"days":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sund
 TPLS=["What is {k} steps after {e}?","{k} steps after {e} is?","From {e}, advance {k} steps. Which item?",
       "Starting at {e}, move {k} steps forward. Result?","{e} plus {k} steps =?","Advance {k} from {e}. Which one?"]
 tag=MODEL.split("/")[-1]+("_base" if IS_BASE else "")
-os.makedirs(data_dir("behavior"),exist_ok=True); OUT=os.path.join(data_dir("behavior"), f"acc_{tag}_{CONCEPT}.json")
+os.makedirs("results/behavior",exist_ok=True); OUT=f"results/behavior/acc_{tag}_{CONCEPT}.json"
 
 # --- prompt builders: IDENTICAL to defladder.py (regime-match) ---
 def make_def(mode,order,rng):

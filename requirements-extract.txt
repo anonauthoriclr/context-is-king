@@ -1,5 +1,6 @@
 # Extraction layer (GPU).
-# Only needed to REGENERATE the cached activations in data/ from model weights.
+# Only needed to regenerate model-derived artifacts from model weights. Extraction
+# scripts write a legacy-compatible results/ tree; see extract/README.md.
 # Gemma-4 loading is version-sensitive, so the paper used two environments:
 #
 #   * Qwen-3.5 (4B/9B/27B), Gemma-4-31B-it, Llama-3.1-8B-Instruct
@@ -14,3 +15,4 @@ accelerate
 numpy>=1.24
 scipy>=1.10
 scikit-learn>=1.3
+ripser>=0.6

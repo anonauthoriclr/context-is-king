@@ -3,12 +3,9 @@
 non-structural query TYPES (question / command / narrative / exclamation / statement / request) rather
 than near-identical neutral paraphrases. Saves activations + the template texts to a NEW npz (does not
 clobber the cached neutral run). No GPU generation -- forward-only hidden states.
-Usage: python demo_tree_diverse.py <hf_model> [--depth 4]  -> data_dir("geometry")/demo_tree_diverse_<tag>_d<D>.npz"""
+Usage: python demo_tree_diverse.py <hf_model> [--depth 4]  -> results/geometry/demo_tree_diverse_<tag>_d<D>.npz"""
 import sys, numpy as np, torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, AutoConfig
-import os, sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 MODEL = sys.argv[1]
 D = int(sys.argv[sys.argv.index("--depth")+1]) if "--depth" in sys.argv else 4
 FRACD = 0.75; N = 2**(D+1)-1
@@ -58,7 +55,6 @@ del model; torch.cuda.empty_cache()
 R = np.array(R, np.float32); NODE = np.array(NODE)
 mu = R.mean(0); U, S, Vt = np.linalg.svd(R-mu, full_matrices=False); P = (R-mu) @ Vt[:3].T
 tag = MODEL.split("/")[-1]
-_outp=os.path.join(data_dir("geometry"), f"demo_tree_diverse_{tag}_d{D}.npz")
-np.savez(_outp,
+np.savez(f"results/geometry/demo_tree_diverse_{tag}_d{D}.npz",
          R=R.astype(np.float16), NODE=NODE, perm=np.array(perm), P=P, L=L, tpls=np.array(TPLS))
-print(f"WROTE {_outp} | rows {len(R)} ntpl {len(TPLS)}", flush=True)
+print(f"WROTE results/geometry/demo_tree_diverse_{tag}_d{D}.npz | rows {len(R)} ntpl {len(TPLS)}", flush=True)

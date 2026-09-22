@@ -6,11 +6,9 @@ and writes them in batches to judge_batches/batch_XXX.jsonl. A subagent reads ea
 writes {hash: {"answer": <entity|NONE>, "concluded": bool}} to judge_out/batch_XXX.json. Then
 apply_judge.py recomputes the metrics from those answers.
 
-Usage: python prep_judge_batches.py data_dir("causal")/causalcot_Qwen3.5-27B.json [--batch 40] [--tail 4000]
+Usage: python prep_judge_batches.py results/causal/causalcot_Qwen3.5-27B.json [--batch 40] [--tail 4000]
 """
 import os, sys, json, hashlib
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 
 BATCH = int(sys.argv[sys.argv.index("--batch")+1]) if "--batch" in sys.argv else 40
 TAIL  = int(sys.argv[sys.argv.index("--tail")+1])  if "--tail"  in sys.argv else 4000

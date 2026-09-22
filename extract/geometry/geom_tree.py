@@ -10,13 +10,11 @@ Probe: declare shuffled parent->children edges; query each entity (parent/childr
 pre-gen residual (thinking-off snap); group by queried entity; centroid RDM vs tree-distance RDM (Spearman).
 Controls: scrambled-tree null (permute entity↔node), dRSA(tree − linear-BFS). Saves residuals + stats (Standard #11).
 Usage: python -u geom_tree.py <hf_model> [--nscr 6] [--base]
-Out: data_dir("geometry")/tree_<tag>.json (+ .npz) + FIG_tree_<tag>.png"""
+Out: results/geometry/tree_<tag>.json (+ .npz) + FIG_tree_<tag>.png"""
 import os, sys, json, numpy as np, torch
 from scipy.stats import spearmanr
 from transformers import AutoTokenizer, AutoModelForCausalLM, AutoConfig
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 
 MODEL=sys.argv[1]; IS_BASE="--base" in sys.argv
 SEPEDGES="--sepedges" in sys.argv   # co-occurrence control: one edge per sentence, siblings NOT co-listed (shuffled apart)
@@ -41,8 +39,8 @@ if QSET=="anc":  # CONTROL: ancestor/descendant/membership queries — NO 'paren
 if QSET=="neutral":  # DECISIVE CONTROL: present the entity in the hierarchy context, ask NOTHING structural
     TPLS=["Consider the item {e}.","Take note of the item {e}.","The item under discussion is {e}.",
           "Focus on this item: {e}.","Here is an item from the set: {e}.","Item of interest: {e}."]
-tag=MODEL.split("/")[-1]+("_base" if IS_BASE else "")+("" if QSET=="rel" else f"_{QSET}")+("" if DLEVEL==2 else f"_d{DLEVEL}")+("_sep" if SEPEDGES else ""); os.makedirs(data_dir("geometry"),exist_ok=True)
-OUT=os.path.join(data_dir("geometry"), f"tree_{tag}.json")
+tag=MODEL.split("/")[-1]+("_base" if IS_BASE else "")+("" if QSET=="rel" else f"_{QSET}")+("" if DLEVEL==2 else f"_d{DLEVEL}")+("_sep" if SEPEDGES else ""); os.makedirs("results/geometry",exist_ok=True)
+OUT=f"results/geometry/tree_{tag}.json"
 
 def tree_dist():  # 7x7 graph path length via depths + LCA
     depth={0:0};
@@ -125,7 +123,7 @@ def main():
               rsa_linear=agg("rsa_linear"),dRSA=agg("dRSA_tree_minus_lin"),z=agg("z"),
               nsig=int(sum(s["rsa_tree"]>s["null_p95"] for s in stats)))
     json.dump(summ,open(OUT,"w"),indent=2)
-    np.savez(os.path.join(data_dir("geometry"), f"tree_{tag}.npz"),**{f"c{si}":allc[si][0] for si in range(NSCR)},
+    np.savez(f"results/geometry/tree_{tag}.npz",**{f"c{si}":allc[si][0] for si in range(NSCR)},
              nodes=np.array([allc[si][1] for si in range(NSCR)]),tok=np.array(TOK7),L=L)
     print(f"== {tag}: RSA_tree {summ['rsa_tree']:+.2f}±{summ['rsa_tree_std']:.2f} (lin {summ['rsa_linear']:+.2f}, dRSA {summ['dRSA']:+.2f}) z={summ['z']:+.1f} sig {summ['nsig']}/{NSCR}",flush=True)
     # figure: PCA of scr0 centroids colored by tree depth, edges drawn; + RSA bars
@@ -144,5 +142,5 @@ def main():
     ax2.bar(x+0.25,nm,0.25,label="scrambled-tree null",color="gray",alpha=.6)
     ax2.set_xticks(x); ax2.set_xticklabels([f"s{i+1}" for i in range(NSCR)]); ax2.set_ylim(-.3,1); ax2.legend(fontsize=8)
     ax2.set_title("Geometry matches imposed TREE distance?"); ax2.axhline(0,color="k",lw=.5)
-    plt.tight_layout(); fn=os.path.join(data_dir("geometry"), f"FIG_tree_{tag}.png"); plt.savefig(fn,dpi=130); print("FIG",os.path.abspath(fn),flush=True)
+    plt.tight_layout(); fn=f"results/geometry/FIG_tree_{tag}.png"; plt.savefig(fn,dpi=130); print("FIG",os.path.abspath(fn),flush=True)
 if __name__=="__main__": main()

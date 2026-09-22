@@ -1,6 +1,6 @@
 #!/bin/bash
 set -u; cd "$(dirname "$0")"
-PY="${VENV:-/path/to/gemma4-venv/bin/python}"
+PY="${VENV:-python}"
 LOG=results/geometry/chessimp_run.log
 echo "=== chess-imposed start $(date) ===" | tee -a "$LOG"
 for M in google/gemma-4-E2B-it Qwen/Qwen3.5-27B google/gemma-4-31B-it; do

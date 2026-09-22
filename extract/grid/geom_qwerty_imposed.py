@@ -6,8 +6,6 @@ Usage: python -u geom_qwerty_imposed.py <hf_model> [--nscr 6]"""
 import os,sys,json,numpy as np,torch
 from scipy.stats import spearmanr
 from transformers import AutoTokenizer,AutoModelForCausalLM,AutoConfig
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 MODEL=sys.argv[1]; NSCR=int(sys.argv[sys.argv.index("--nscr")+1]) if "--nscr" in sys.argv else 6; FRACD=0.75
 KEYS=["Q","W","E","A","S","D","Z","X","C"]; N=9
 COORD={"Q":(0,0),"W":(0,1),"E":(0,2),"A":(1,0),"S":(1,1),"D":(1,2),"Z":(2,0),"X":(2,1),"C":(2,2)}
@@ -61,7 +59,7 @@ def main():
     out=dict(model=MODEL,L=int(L),nscr=NSCR,keys=KEYS,spec_example=spec0,per=stats,
              rsa_imposed=a("imp"),rsa_imposed_std=float(np.std([s["imp"] for s in stats])),rsa_natural=a("nat"),
              dominance=a("dom"),n_imp_beats_nat=int(sum(s["imp"]>s["nat"] for s in stats)),nsig=int(sum(s["p"]<0.05 for s in stats)))
-    json.dump(out,open(os.path.join(data_dir("geometry"), f"qwertyimposed_{tag}.json"),"w"),indent=2)
-    np.savez(os.path.join(data_dir("geometry"), f"qwertyimposed_{tag}.npz"),**{f"c{si}":allc[si] for si in range(NSCR)},keys=np.array(KEYS),perms=np.array(perms),natcoord=np.array([COORD[k] for k in KEYS]))
+    json.dump(out,open(f"results/geometry/qwertyimposed_{tag}.json","w"),indent=2)
+    np.savez(f"results/geometry/qwertyimposed_{tag}.npz",**{f"c{si}":allc[si] for si in range(NSCR)},keys=np.array(KEYS),perms=np.array(perms),natcoord=np.array([COORD[k] for k in KEYS]))
     print(f"== {tag}: imposed {a('imp'):+.2f}±{out['rsa_imposed_std']:.2f} natural {a('nat'):+.2f} DOMINANCE {a('dom'):+.2f} | imp-beats-nat {out['n_imp_beats_nat']}/{NSCR} sig {out['nsig']}/{NSCR}",flush=True)
 if __name__=="__main__": main()

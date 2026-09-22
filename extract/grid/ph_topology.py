@@ -5,12 +5,9 @@ imposed CYCLE should carry one dominant, persistent H1 bar (b1=1, a 1-D hole); a
 points of the same N/dim give only short-lived spurious H1. Reports the top-H1 persistence (death-birth) per structure +
 a random baseline, so the loop is certified by a topological invariant independent of RSA. Uses the arbitrary-token ring
 and tree (meaning-free tokens) = the formal version of the construction-on-arbitrary-tokens result.
-Run with the phvenv (ripser). Out: prints + data_dir("geometry")/ph_topology.json"""
+Run with the phvenv (ripser). Out: prints + results/geometry/ph_topology.json"""
 import os, json, glob, numpy as np
 from ripser import ripser
-import os, sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 
 def cos_rdm(c):
     X=c-c.mean(0); X=X/(np.linalg.norm(X,axis=1,keepdims=True)+1e-9); return 1-X@X.T
@@ -32,7 +29,7 @@ def load_centroids(path):
     return cs  # list of (N, hidden) per scramble
 
 def main():
-    G=data_dir("geometry"); out={}
+    G="results/geometry"; out={}
     targets=[
         ("CYCLE ring (Gemma-31B, arbitrary tokens)", f"{G}/graph_ring_gemma-4-31B-it.npz"),
         ("CYCLE ring (Qwen-27B, arbitrary tokens)",  f"{G}/graph_ring_Qwen3.5-27B.npz"),

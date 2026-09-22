@@ -3,13 +3,11 @@
 (the paper's readout, not the entity token)? Three cyclic concepts (weekdays/months/zodiac), neutral mentions + natural
 k-step queries, NO redefinition. Read residual at last prompt token, pre-generation. Reports cyclic RSA (natural order)
 + permutation-null p + participation-ratio eff-dim; saves centroids + a fig1-style ring panel.
-Usage: python -u natural_baseline_fig.py <hf_model>   Out: data_dir("geometry")/natbase_<tag>.{json,npz,png}"""
+Usage: python -u natural_baseline_fig.py <hf_model>   Out: results/geometry/natbase_<tag>.{json,npz,png}"""
 import os, sys, json, numpy as np, torch
 from scipy.stats import spearmanr
 from transformers import AutoTokenizer, AutoModelForCausalLM, AutoConfig
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 
 MODEL = sys.argv[1]; FRACD = 0.75
 CONCEPTS = {
@@ -29,7 +27,7 @@ def effdim(c):
     X=c-c.mean(0); l=np.linalg.svd(X,compute_uv=False)**2; return float((l.sum()**2)/(np.sum(l**2)+1e-12))
 
 def main():
-    tag=MODEL.split("/")[-1]; os.makedirs(data_dir("geometry"),exist_ok=True)
+    tag=MODEL.split("/")[-1]; os.makedirs("results/geometry",exist_ok=True)
     cfg=AutoConfig.from_pretrained(MODEL); nl=getattr(cfg,"num_hidden_layers",None) or getattr(getattr(cfg,"text_config",None),"num_hidden_layers",None)
     L=int(round(FRACD*nl)); print(f"NAT-BASELINE {MODEL} L={L}/{nl}",flush=True)
     tok=AutoTokenizer.from_pretrained(MODEL); tok.padding_side="left"
@@ -60,8 +58,8 @@ def main():
         out[cname]={"N":N,"rsa":float(rsa),"p":float(p),"effdim":ed}
         print(f"  [{cname:8s}] SENTENCE-END natural-order RSA={rsa:+.2f} p={p:.3f} eff-dim={ed:.1f}",flush=True)
     del model; torch.cuda.empty_cache()
-    json.dump({"model":MODEL,"L":L,"nl":nl,"res":out},open(os.path.join(data_dir("geometry"), f"natbase_{tag}.json"),"w"),indent=2)
-    np.savez(os.path.join(data_dir("geometry"), f"natbase_{tag}.npz"),**{cname:cents_all[cname] for cname in CONCEPTS})
+    json.dump({"model":MODEL,"L":L,"nl":nl,"res":out},open(f"results/geometry/natbase_{tag}.json","w"),indent=2)
+    np.savez(f"results/geometry/natbase_{tag}.npz",**{cname:cents_all[cname] for cname in CONCEPTS})
     # fig1-style panel: natural-order ring per concept, at sentence-end
     fig,axs=plt.subplots(1,3,figsize=(12,4.2))
     for ax,(cname,(base,noun)) in zip(axs,CONCEPTS.items()):
@@ -72,5 +70,5 @@ def main():
         for i,e in enumerate(base): ax.annotate(e[:3],(P[i,0],P[i,1]),fontsize=6,ha="center",va="center")
         ax.set_xticks([]);ax.set_yticks([]); ax.set_title(f"{cname}\nnat-RSA={out[cname]['rsa']:+.2f}, eff-dim={out[cname]['effdim']:.1f}",fontsize=9)
     fig.suptitle(f"{tag}: NO imposed order — pretrained relations at SENTENCE-END (2D PCA; traced in natural order, red=wrap)",fontsize=11)
-    fig.tight_layout(); fn=os.path.join(data_dir("geometry"), f"natbase_{tag}.png"); fig.savefig(fn,dpi=140); print("SAVED",os.path.abspath(fn),flush=True)
+    fig.tight_layout(); fn=f"results/geometry/natbase_{tag}.png"; fig.savefig(fn,dpi=140); print("SAVED",os.path.abspath(fn),flush=True)
 if __name__=="__main__": main()

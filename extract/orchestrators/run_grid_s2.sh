@@ -4,7 +4,7 @@
 # Qwen 4B->9B->27B gating curves on the 2-D grid. Forward-only, file-skip resumable. gemma4-venv. Run from exp01 dir.
 set -u
 cd "$(dirname "$0")"
-V="${VENV:-/path/to/gemma4-venv}"
+V="${VENV:?Set VENV to the virtual-environment directory}"
 PY=$V/bin/python
 LOG=results/geometry/grid_s2.log
 mkdir -p results/geometry

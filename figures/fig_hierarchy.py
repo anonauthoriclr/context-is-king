@@ -14,11 +14,11 @@ import os, numpy as np, matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
-from scipy.stats import spearmanr
+from scipy.stats import spearmanr, t as student_t
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 _OUT = os.environ.get("CIK_OUT", os.path.join(HERE, "output")); os.makedirs(_OUT, exist_ok=True)
-DATA = os.environ.get("CIK_DATA", os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data")))
+DATA = os.environ.get("CIK_DATA", os.path.normpath(os.path.join(HERE, "..", "data")))
 G = os.path.join(DATA, "geometry") + "/"
 def tree(N):
     P = {i: (i - 1) // 2 for i in range(1, N)}
@@ -31,6 +31,11 @@ def tree(N):
 def load(f):
     d = np.load(f, allow_pickle=True); cs = [d[k] for k in d.files if k.startswith("c") and k[1:].isdigit()]
     return cs, np.array(d["nodes"])
+def mean_ci95(values):
+    values = np.asarray(values, dtype=float)
+    mean = float(values.mean())
+    half = float(student_t.ppf(0.975, len(values) - 1) * values.std(ddof=1) / np.sqrt(len(values)))
+    return mean, half
 def depth_rsa(f):
     cs, nodes = load(f); N = cs[0].shape[0]; _, _, DEP = tree(N); r = []
     for si in range(len(cs)):
@@ -39,19 +44,22 @@ def depth_rsa(f):
         idx = [pos[g] for g in range(N)]; iu = np.triu_indices(N, 1)
         dep = np.array([[abs(DEP[i] - DEP[j]) for j in range(N)] for i in range(N)], float)
         r.append(spearmanr(COS[np.ix_(idx, idx)][iu], dep[iu]).correlation)
-    return np.mean(r), np.std(r)
+    return mean_ci95(r)
 def genealogy(f):
     cs, nodes = load(f); N = cs[0].shape[0]; P, A, DEP = tree(N); D = max(DEP.values())
     leaves = [g for g in range(N) if DEP[g] == D]
     def coph(i, j): c = A[i] & A[j]; return DEP[i] + DEP[j] - 2 * max(DEP[x] for x in c)
     from collections import defaultdict; by = defaultdict(list)
     for si in range(len(cs)):
+        per_scramble = defaultdict(list)
         ndi = nodes[si] if nodes.ndim == 2 else nodes; pos = {int(ndi[k]): k for k in range(len(ndi))}
         C = cs[si].astype(float); Cc = C - C.mean(0); Cn = Cc / (np.linalg.norm(Cc, axis=1, keepdims=True) + 1e-12); COS = 1 - Cn @ Cn.T
         for a in range(len(leaves)):
             for b in range(a + 1, len(leaves)):
-                by[coph(leaves[a], leaves[b])].append(COS[pos[leaves[a]], pos[leaves[b]]])
-    return {k: (np.mean(v), np.std(v)) for k, v in by.items()}
+                per_scramble[coph(leaves[a], leaves[b])].append(COS[pos[leaves[a]], pos[leaves[b]]])
+        for k, values in per_scramble.items():
+            by[k].append(np.mean(values))
+    return {k: mean_ci95(v) for k, v in by.items()}
 
 GREEN, PURPLE = "#1b7837", "#762a83"
 fig = plt.figure(figsize=(15.2, 4.7)); fig.patch.set_facecolor("white")
@@ -93,8 +101,8 @@ cb = fig.colorbar(scA, ax=axA, shrink=0.5, pad=0.14, ticks=range(maxd + 1)); cb.
 axB = fig.add_subplot(gs[0, 1]); depths = [2, 3, 4]
 gem = [depth_rsa(G + f) for f in ["tree_gemma-4-31B-it_neutral.npz", "tree_gemma-4-31B-it_neutral_d3.npz", "tree_gemma-4-31B-it_neutral_d4.npz"]]
 qwn = [depth_rsa(G + f) for f in ["tree_Qwen3.5-27B_neutral.npz", "tree_Qwen3.5-27B_neutral_d3.npz", "tree_Qwen3.5-27B_neutral_d4.npz"]]
-axB.errorbar(depths, [m for m, _ in gem], yerr=[s for _, s in gem], marker="o", capsize=3, label="Gemma-4-31B", color=GREEN)
-axB.errorbar(depths, [m for m, _ in qwn], yerr=[s for _, s in qwn], marker="s", capsize=3, label="Qwen-3.5-27B", color=PURPLE)
+axB.errorbar(depths, [m for m, _ in gem], yerr=[s for _, s in gem], marker="o", capsize=3, label="Gemma-31B", color=GREEN)
+axB.errorbar(depths, [m for m, _ in qwn], yerr=[s for _, s in qwn], marker="s", capsize=3, label="Qwen-27B", color=PURPLE)
 axB.set_xticks(depths); axB.set_xticklabels(["d2 (7n)", "d3 (15n)", "d4 (31n)"]); axB.set_ylim(0, 1)
 axB.set_ylabel("depth-RSA (Spearman)", fontsize=9); axB.axhline(0, color="0.7", lw=0.6)
 axB.set_title("B", fontsize=11, color="#1d2430", loc="left", fontweight="bold"); axB.legend(fontsize=8)
@@ -105,10 +113,11 @@ axC = fig.add_subplot(gs[0, 2])
 gb = genealogy(G + "tree_gemma-4-31B-it_neutral_d3.npz"); gsep = genealogy(G + "tree_gemma-4-31B-it_neutral_d3_sep.npz")
 qb = genealogy(G + "tree_Qwen3.5-27B_neutral_d3.npz"); qsep = genealogy(G + "tree_Qwen3.5-27B_neutral_d3_sep.npz")
 ks = [2, 4, 6]; labs = ["sibling", "cousin", "2nd cousin"]; x = np.arange(3); w = 0.2
-axC.bar(x - 1.5 * w, [gb[k][0] for k in ks], w, label="Gemma co-listed", color=GREEN)
-axC.bar(x - 0.5 * w, [gsep[k][0] for k in ks], w, label="Gemma separated", color="#7fbf7b")
-axC.bar(x + 0.5 * w, [qb[k][0] for k in ks], w, label="Qwen co-listed", color=PURPLE)
-axC.bar(x + 1.5 * w, [qsep[k][0] for k in ks], w, label="Qwen separated", color="#c2a5cf")
+bar_kw = dict(capsize=2.5, error_kw=dict(lw=0.8, capthick=0.8))
+axC.bar(x - 1.5 * w, [gb[k][0] for k in ks], w, yerr=[gb[k][1] for k in ks], label="Gemma co-listed", color=GREEN, **bar_kw)
+axC.bar(x - 0.5 * w, [gsep[k][0] for k in ks], w, yerr=[gsep[k][1] for k in ks], label="Gemma separated", color="#7fbf7b", **bar_kw)
+axC.bar(x + 0.5 * w, [qb[k][0] for k in ks], w, yerr=[qb[k][1] for k in ks], label="Qwen co-listed", color=PURPLE, **bar_kw)
+axC.bar(x + 1.5 * w, [qsep[k][0] for k in ks], w, yerr=[qsep[k][1] for k in ks], label="Qwen separated", color="#c2a5cf", **bar_kw)
 axC.set_xticks(x); axC.set_xticklabels(labs, fontsize=9); axC.set_ylabel("cosine distance", fontsize=9)
 axC.set_title("C", fontsize=11, color="#1d2430", loc="left", fontweight="bold")
 axC.legend(fontsize=6.8, ncol=2)

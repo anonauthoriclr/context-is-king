@@ -1,0 +1,177 @@
+{
+  "description": "Compact aggregate and per-scramble outputs for Table tab:cooccur.",
+  "models": {
+    "gemma-4-31B-it": {
+      "list_no_wrap": {
+        "per_scramble": [
+          {
+            "scramble": 0,
+            "dRSA": -0.043367358787379295,
+            "closure": 2.212241216789321
+          },
+          {
+            "scramble": 1,
+            "dRSA": -0.061300948842902936,
+            "closure": 1.9613894483244048
+          },
+          {
+            "scramble": 2,
+            "dRSA": -0.07790527574071415,
+            "closure": 2.092431875585294
+          }
+        ],
+        "mean_dRSA": -0.06085786112366546,
+        "mean_closure": 2.08868751356634
+      },
+      "adjacent_wrap": {
+        "per_scramble": [
+          {
+            "scramble": 0,
+            "dRSA": 0.1393834002508546,
+            "closure": 1.1277660483378855
+          },
+          {
+            "scramble": 1,
+            "dRSA": 0.1948973309457197,
+            "closure": 0.9952017303109517
+          },
+          {
+            "scramble": 2,
+            "dRSA": 0.1556611426460328,
+            "closure": 1.1435218121128214
+          }
+        ],
+        "mean_dRSA": 0.1633139579475357,
+        "mean_closure": 1.0888298635872193
+      },
+      "wrap_by_position": {
+        "per_scramble": [
+          {
+            "scramble": 0,
+            "dRSA": 0.0765699847621627,
+            "closure": 1.6475951769381025
+          },
+          {
+            "scramble": 1,
+            "dRSA": 0.04600839470837459,
+            "closure": 1.4067529937455658
+          },
+          {
+            "scramble": 2,
+            "dRSA": 0.06894391546570311,
+            "closure": 1.3543792342969752
+          }
+        ],
+        "mean_dRSA": 0.0638407649787468,
+        "mean_closure": 1.4695758016602145
+      },
+      "co_mention_no_relation": {
+        "per_scramble": [
+          {
+            "scramble": 0,
+            "dRSA": -0.043367358787379295,
+            "closure": 2.2463309472504207
+          },
+          {
+            "scramble": 1,
+            "dRSA": -0.09153595439405815,
+            "closure": 1.9992065167245532
+          },
+          {
+            "scramble": 2,
+            "dRSA": -0.1762363616906395,
+            "closure": 2.3302259613049294
+          }
+        ],
+        "mean_dRSA": -0.10371322495735898,
+        "mean_closure": 2.1919211417599676
+      }
+    },
+    "Qwen3.5-27B": {
+      "list_no_wrap": {
+        "per_scramble": [
+          {
+            "scramble": 0,
+            "dRSA": -0.21639499063027579,
+            "closure": 1.9825720564583487
+          },
+          {
+            "scramble": 1,
+            "dRSA": -0.2927588467571818,
+            "closure": 1.8755932478829012
+          },
+          {
+            "scramble": 2,
+            "dRSA": -0.35916469177483695,
+            "closure": 2.02799205839681
+          }
+        ],
+        "mean_dRSA": -0.2894395097207649,
+        "mean_closure": 1.9620524542460196
+      },
+      "adjacent_wrap": {
+        "per_scramble": [
+          {
+            "scramble": 0,
+            "dRSA": -0.03173057487060371,
+            "closure": 1.4633409020207149
+          },
+          {
+            "scramble": 1,
+            "dRSA": -0.06189680498021899,
+            "closure": 1.2908766239462324
+          },
+          {
+            "scramble": 2,
+            "dRSA": -0.15454986607589305,
+            "closure": 1.3355906771924104
+          }
+        ],
+        "mean_dRSA": -0.08272574864223858,
+        "mean_closure": 1.3632694010531192
+      },
+      "wrap_by_position": {
+        "per_scramble": [
+          {
+            "scramble": 0,
+            "dRSA": -0.25394094354884755,
+            "closure": 1.9120331135732629
+          },
+          {
+            "scramble": 1,
+            "dRSA": -0.28447960845545606,
+            "closure": 1.7536393906935457
+          },
+          {
+            "scramble": 2,
+            "dRSA": -0.3638285754004193,
+            "closure": 1.874143571794913
+          }
+        ],
+        "mean_dRSA": -0.3007497091349076,
+        "mean_closure": 1.8466053586872404
+      },
+      "co_mention_no_relation": {
+        "per_scramble": [
+          {
+            "scramble": 0,
+            "dRSA": -0.08785182427637472,
+            "closure": 1.84660269234142
+          },
+          {
+            "scramble": 1,
+            "dRSA": -0.3010724727796773,
+            "closure": 1.8060067003911344
+          },
+          {
+            "scramble": 2,
+            "dRSA": -0.34622156984752883,
+            "closure": 1.8548617499901987
+          }
+        ],
+        "mean_dRSA": -0.24504862230119362,
+        "mean_closure": 1.8358237142409177
+      }
+    }
+  }
+}

@@ -1,9 +1,9 @@
 #!/bin/bash
 # After step A (Gemma-31B CoT) frees the GPU: Gemma-12B entity patch (snap+CoT, gemma4u-venv, gemma4_unified arch)
 # + k-patch all-pairs on Gemma-31B (gemma4-venv). File-skip/resumable. Qwen deferred (per operator).
-cd "${ROOT:-/path/to/context-is-king/extract}"
-VU="${VENV:-/path/to/gemma4u-venv}"   # tf5.12.1, loads gemma4_unified (12B)
-V="${VENV:-/path/to/gemma4-venv}"      # tf5.5.3, loads gemma4 (31B) + qwen3_5
+cd "${ROOT:?Set ROOT to the extraction working directory}"
+VU="${VENV_UNIFIED:?Set VENV_UNIFIED to the unified-model virtual-environment directory}"   # tf5.12.1, loads gemma4_unified (12B)
+V="${VENV:?Set VENV to the virtual-environment directory}"      # tf5.5.3, loads gemma4 (31B) + qwen3_5
 export HF_HUB_DISABLE_PROGRESS_BARS=1 TRANSFORMERS_VERBOSITY=error
 D=results/causal; log(){ echo "[$(date +%H:%M:%S)] $*"; }
 gpu_free(){ while nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits | awk '{exit ($1>5000)?0:1}'; do sleep 15; done; }

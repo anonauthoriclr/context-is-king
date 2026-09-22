@@ -1,6 +1,6 @@
 #!/bin/bash
 set -u; cd "$(dirname "$0")"
-PY="${VENV:-/path/to/gemma4-venv/bin/python}"
+PY="${VENV:-python}"
 LOG=results/geometry/storyprobe.log
 echo "=== storyprobe start $(date) ===" | tee -a "$LOG"
 for M in google/gemma-4-31B-it Qwen/Qwen3.5-27B; do

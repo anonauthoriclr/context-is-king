@@ -1,0 +1,43 @@
+{
+  "description": "Compact aggregate outputs for paper tables whose full activation caches are intentionally omitted from the curated release.",
+  "tab:robust": {
+    "non_structural_probe_imposed_minus_natural_rsa": {
+      "gemma-4-31B-it": {
+        "neutral_mention": 0.52,
+        "story": 0.46
+      },
+      "Qwen3.5-27B": {
+        "neutral_mention": 0.41,
+        "story": 0.41
+      }
+    },
+    "imposed_order_rsa_by_hop": {
+      "gemma-4-31B-it": {
+        "k1": 0.67,
+        "k6": 0.71,
+        "full_k": 0.81,
+        "k1_vs_full_rdm_spearman": 0.74
+      },
+      "Qwen3.5-27B": {
+        "k1": 0.64,
+        "k6": 0.54,
+        "full_k": 0.56,
+        "k1_vs_full_rdm_spearman": 0.93
+      }
+    },
+    "analysis": [
+      "extract/geometry/geom_storyprobe.py",
+      "figures/k_marginalize.py"
+    ]
+  },
+  "tab:proj": {
+    "days_scramble_s0": {
+      "gemma-4-31B-it": {"rsa_2d": 0.81, "rsa_3d": 0.85, "rsa_full": 0.82, "top3_variance": 0.88},
+      "gemma-4-E2B-it": {"rsa_2d": 0.55, "rsa_3d": 0.64, "rsa_full": 0.56, "top3_variance": 0.71},
+      "Qwen3.5-27B": {"rsa_2d": 0.78, "rsa_3d": 0.71, "rsa_full": 0.65, "top3_variance": 0.83},
+      "Qwen3.5-9B": {"rsa_2d": 0.28, "rsa_3d": 0.23, "rsa_full": 0.26, "top3_variance": 0.71},
+      "Qwen3.5-4B": {"rsa_2d": 0.32, "rsa_3d": 0.31, "rsa_full": 0.24, "top3_variance": 0.63}
+    },
+    "analysis": "figures/soundness_pass.py"
+  }
+}

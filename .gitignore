@@ -1,6 +1,12 @@
 # All cached artifacts (JSON + .npz) are committed so the repo is self-contained:
 # `git clone` -> figures and tables reproduce with no external download.
 
+# The parent research repository ignores activation arrays globally. This
+# release is the deliberate exception: only the curated figure-ready caches
+# under data/ are versioned.
+!data/**/*.npz
+!assets/shapes_3d.html
+
 # Python
 __pycache__/
 *.pyc

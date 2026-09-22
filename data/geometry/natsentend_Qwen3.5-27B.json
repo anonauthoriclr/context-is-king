@@ -1,0 +1,136 @@
+{
+  "model": "Qwen/Qwen3.5-27B",
+  "L": 48,
+  "nl": 64,
+  "res": {
+    "query": {
+      "sentend": {
+        "rsa": 0.5971484496103002,
+        "p_exact": 0.030555555555555555,
+        "effdim": 3.1667611598968506,
+        "ci95": [
+          0.19262853213235487,
+          0.7223569954963308
+        ]
+      },
+      "daytok": {
+        "rsa": 0.8379341147757438,
+        "p_exact": 0.002777777777777778,
+        "effdim": 4.938307762145996,
+        "ci95": [
+          0.7705141285294195,
+          0.8764598212022148
+        ]
+      },
+      "per_hop": [
+        {
+          "k": 1,
+          "sentend_rsa": 0.21189138534559038,
+          "daytok_rsa": 0.8379341147757438
+        },
+        {
+          "k": 2,
+          "sentend_rsa": 0.6067798762169179,
+          "daytok_rsa": 0.8379341147757438
+        },
+        {
+          "k": 3,
+          "sentend_rsa": 0.6260427294301533,
+          "daytok_rsa": 0.8379341147757438
+        },
+        {
+          "k": 4,
+          "sentend_rsa": 0.6645684358566244,
+          "daytok_rsa": 0.8379341147757438
+        },
+        {
+          "k": 5,
+          "sentend_rsa": 0.48157133033088717,
+          "daytok_rsa": 0.8186712615625081
+        },
+        {
+          "k": 6,
+          "sentend_rsa": 0.7030941422830953,
+          "daytok_rsa": 0.8283026881691259
+        }
+      ],
+      "per_template": [
+        {
+          "template": "What is {k} steps after {e}?",
+          "sentend_rsa": 0.38525706426470974,
+          "daytok_rsa": 0.8475655413823615
+        },
+        {
+          "template": "{k} steps after {e} is?",
+          "sentend_rsa": 0.41415134408456294,
+          "daytok_rsa": 0.5875170230036825
+        },
+        {
+          "template": "From {e}, advance {k} steps. Which item?",
+          "sentend_rsa": 0.5008341835441227,
+          "daytok_rsa": 0.8475655413823615
+        },
+        {
+          "template": "Starting at {e}, move {k} steps forward. Result?",
+          "sentend_rsa": 0.7223569954963308,
+          "daytok_rsa": 0.8090398349558905
+        },
+        {
+          "template": "{e} plus {k} steps =?",
+          "sentend_rsa": 0.07705141285294195,
+          "daytok_rsa": 0.7030941422830953
+        },
+        {
+          "template": "Advance {k} from {e}. Which one?",
+          "sentend_rsa": 0.23115423855882586,
+          "daytok_rsa": 0.8379341147757438
+        }
+      ],
+      "n_prompts": 252
+    },
+    "neutral": {
+      "sentend": {
+        "rsa": 0.6260427294301533,
+        "p_exact": 0.008333333333333333,
+        "effdim": 2.6520979404449463,
+        "ci95": [
+          0.5875170230036825,
+          0.7127255688897132
+        ]
+      },
+      "daytok": {
+        "rsa": 0.7897769817426551,
+        "p_exact": 0.002777777777777778,
+        "effdim": 4.555291175842285,
+        "ci95": [
+          0.7705141285294195,
+          0.8571969679889792
+        ]
+      },
+      "per_hop": [],
+      "per_template": [
+        {
+          "template": "Consider the day {e}.",
+          "sentend_rsa": 0.6260427294301533,
+          "daytok_rsa": 0.8283026881691259
+        },
+        {
+          "template": "The day under discussion is {e}.",
+          "sentend_rsa": 0.5778855963970646,
+          "daytok_rsa": 0.7801455551360372
+        },
+        {
+          "template": "Tell me about the day {e}.",
+          "sentend_rsa": 0.6356741560367711,
+          "daytok_rsa": 0.8571969679889792
+        },
+        {
+          "template": "Here is a day: {e}.",
+          "sentend_rsa": 0.7223569954963308,
+          "daytok_rsa": 0.8090398349558905
+        }
+      ],
+      "n_prompts": 28
+    }
+  }
+}

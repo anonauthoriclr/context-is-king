@@ -1,8 +1,8 @@
 #!/bin/bash
 # Depth-4 (31-node, 5-level) imposed-tree geometry, 6 scrambles, neutral queries — Gemma + Qwen.
 # Settles whether the renderer's branch fidelity holds at the deepest level (the single-scramble demo folded; n=1).
-cd "${ROOT:-/path/to/context-is-king/extract}"
-V="${VENV:-/path/to/gemma4-venv}"
+cd "${ROOT:?Set ROOT to the extraction working directory}"
+V="${VENV:?Set VENV to the virtual-environment directory}"
 export HF_HUB_DISABLE_PROGRESS_BARS=1 TRANSFORMERS_VERBOSITY=error
 gf(){ while nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits|awk '{exit ($1>5000)?0:1}';do sleep 15;done; }
 # skip a model if its depth-4 output already exists (resume-safe)

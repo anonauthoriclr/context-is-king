@@ -7,8 +7,6 @@ keys avoid the chess a1/a2 lexical confound. Usage: python -u geom_qwerty.py <hf
 import os,sys,json,numpy as np,torch
 from scipy.stats import spearmanr
 from transformers import AutoTokenizer,AutoModelForCausalLM,AutoConfig
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 MODEL=sys.argv[1]; FRACD=0.75
 KEYS=["Q","W","E","A","S","D","Z","X","C"]; N=9   # reading (row-major) order
 COORD={"Q":(0,0),"W":(0,1),"E":(0,2),"A":(1,0),"S":(1,1),"D":(1,2),"Z":(2,0),"X":(2,1),"C":(2,2)}
@@ -50,8 +48,8 @@ def main():
     del model;torch.cuda.empty_cache()
     out=dict(model=MODEL,L=int(L),keys=KEYS,rsa=rsa,best=best,
              dRSA_kbd_minus_read=rsa["kbd_cheb"]-rsa["read_1d"],dRSA_kbd_minus_alpha=rsa["kbd_cheb"]-rsa["alpha_1d"],p_emp_kbd=p)
-    json.dump(out,open(os.path.join(data_dir("geometry"), f"qwerty_{tag}.json"),"w"),indent=2)
-    np.savez(os.path.join(data_dir("geometry"), f"qwerty_{tag}.npz"),cents=C,keys=np.array(KEYS),coord=np.array([COORD[k] for k in KEYS]),L=L)
+    json.dump(out,open(f"results/geometry/qwerty_{tag}.json","w"),indent=2)
+    np.savez(f"results/geometry/qwerty_{tag}.npz",cents=C,keys=np.array(KEYS),coord=np.array([COORD[k] for k in KEYS]),L=L)
     print(f"== {tag}: kbd_cheb={rsa['kbd_cheb']:+.2f} kbd_manh={rsa['kbd_manh']:+.2f} read_1d={rsa['read_1d']:+.2f} "
           f"alpha_1d={rsa['alpha_1d']:+.2f} | best={best} dRSA(kbd-read)={rsa['kbd_cheb']-rsa['read_1d']:+.2f} "
           f"dRSA(kbd-alpha)={rsa['kbd_cheb']-rsa['alpha_1d']:+.2f} p_kbd={p:.3f}",flush=True)

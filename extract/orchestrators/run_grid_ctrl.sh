@@ -4,7 +4,7 @@
 # file-skip resumable. Saves exact spec text + centroids for offline audit. gemma4-venv. Run from exp01 dir.
 set -u
 cd "$(dirname "$0")"
-V="${VENV:-/path/to/gemma4-venv}"
+V="${VENV:?Set VENV to the virtual-environment directory}"
 PY=$V/bin/python
 LOG=results/geometry/grid_ctrl.log
 mkdir -p results/geometry

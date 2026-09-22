@@ -4,8 +4,6 @@ Same 7 weekdays, 5 conditions, 10 scrambles, 12 queries, day-token + last-token.
 import os, sys, json, numpy as np, torch
 from scipy.stats import spearmanr
 from transformers import AutoTokenizer, AutoModelForCausalLM, AutoConfig
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 MODEL=sys.argv[1] if len(sys.argv)>1 else "google/gemma-4-31B-it"; FRACD=0.75; NSCR=10
 DAYS=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]; N=7
 NEUTRAL=["Consider {e}.","Take note of {e}.","The item is {e}.","Focus on {e}.","Here is an item: {e}.","Regarding {e}."]
@@ -54,9 +52,7 @@ def main():
             ids_b=enc["input_ids"].cpu().tolist()
             for j,(e,i) in enumerate(rows[bi:bi+8]):
                 dp=last_pos(ids_b[j],e); aD[e].append(H[j,dp if dp is not None else -1]); aE[e].append(H[j,-1])
-        return np.stack([np.mean(aD[e],0) for e in DAYS]), np.stack([np.mean(aE[e],0) for e in DAYS]), aD, aE
-    def _cloud(a):  # dict entity->list[vec] -> (points[P,d], entity_label[P]); the cloud behind each centroid
-        return np.concatenate([np.stack(a[e]) for e in DAYS]), np.array([e for e in DAYS for _ in a[e]])
+        return np.stack([np.mean(aD[e],0) for e in DAYS]), np.stack([np.mean(aE[e],0) for e in DAYS])
     def neutral(rule): return {e:[rule+q.format(e=e) for q in QSET] for e in DAYS}
     def khop(): return {e:[q.format(k=k,e=e) for q in KHOP for k in (1,2,3)] for e in DAYS}
 
@@ -66,22 +62,17 @@ def main():
         pr,l2=dimstats(C); ip=ipos if ipos is not None else list(range(N))
         rows.append((nm,pos,si,spearmanr(o,cyc(ip)).correlation,spearmanr(o,lin(ip)).correlation,
                      (spearmanr(o,dtmpl).correlation if dtmpl is not None else np.nan),closure(C,order),pr,l2))
-    CD,CE,aD,aE=centroids(neutral(""));    rec("NAT-neutral","day",-1,CD,None); rec("NAT-neutral","end",-1,CE,None); cent0["NAT_day"]=CD
-    cent0["NAT_day_pts"],cent0["NAT_day_pts_ent"]=_cloud(aD)   # point cloud behind the natural ring
-    CD,CE,aD,aE=centroids(khop());         rec("NAT-structural","day",-1,CD,None); rec("NAT-structural","end",-1,CE,None)
+    CD,CE=centroids(neutral(""));    rec("NAT-neutral","day",-1,CD,None); rec("NAT-neutral","end",-1,CE,None); cent0["NAT_day"]=CD
+    CD,CE=centroids(khop());         rec("NAT-structural","day",-1,CD,None); rec("NAT-structural","end",-1,CE,None)
     for si in range(NSCR):
         order=list(rng.permutation(DAYS)); ipos=[order.index(d) for d in DAYS]
         for nm,rule in [("CYCLE",cyc_rule(order)),("LINE",line_rule(order))]:
-            CD,CE,aD,aE=centroids(neutral(rule)); rec(nm,"day",si,CD,ipos); rec(nm,"end",si,CE,ipos)
-            if si==0:
-                cent0[nm+"_end"]=CE; cent0[nm+"_ipos"]=np.array(ipos)
-                cent0[nm+"_end_pts"],cent0[nm+"_end_pts_ent"]=_cloud(aE)
+            CD,CE=centroids(neutral(rule)); rec(nm,"day",si,CD,ipos); rec(nm,"end",si,CE,ipos)
+            if si==0: cent0[nm+"_end"]=CE; cent0[nm+"_ipos"]=np.array(ipos)
         perm=list(rng.permutation(DAYS)); assign=dict(enumerate(perm)); node_of={perm[k]:k for k in range(N)}
         dvec=np.array([DEPTH[node_of[d]] for d in DAYS]); dtmpl=np.abs(dvec[:,None]-dvec[None,:])[tri].astype(float)
-        CD,CE,aD,aE=centroids(neutral(tree_rule(assign,rng))); rec("TREE","day",si,CD,ipos,dtmpl); rec("TREE","end",si,CE,ipos,dtmpl)
-        if si==0:
-            cent0["TREE_end"]=CE; cent0["tree_depth"]=dvec; cent0["tree_edges"]=np.array([(DAYS.index(assign[p]),DAYS.index(assign[c])) for p,ch in CHILD.items() for c in ch])
-            cent0["TREE_end_pts"],cent0["TREE_end_pts_ent"]=_cloud(aE)
+        CD,CE=centroids(neutral(tree_rule(assign,rng))); rec("TREE","day",si,CD,ipos,dtmpl); rec("TREE","end",si,CE,ipos,dtmpl)
+        if si==0: cent0["TREE_end"]=CE; cent0["tree_depth"]=dvec; cent0["tree_edges"]=np.array([(DAYS.index(assign[p]),DAYS.index(assign[c])) for p,ch in CHILD.items() for c in ch])
         print(f"  scr{si} done",flush=True)
     import collections; agg=collections.defaultdict(list)
     for r in rows: agg[(r[0],r[1])].append(r[3:])
@@ -91,7 +82,8 @@ def main():
         for pos in ["day","end"]:
             a=np.array(agg[(nm,pos)],float); cy=ms(a[:,0]); dp=ms(a[:,2]); cl=ms(a[:,3]); pr=ms(a[:,4]); l2=ms(a[:,5])
             print(f" {nm:14s} {pos:3s}  {cy[0]:+.2f}±{cy[1]:.2f}  {dp[0]:+.2f}±{dp[1]:.2f}  {cl[0]:.2f}±{cl[1]:.2f}  {pr[0]:.2f}±{pr[1]:.2f}   {l2[0]:.2f}±{l2[1]:.2f}")
-    SP=data_dir("shapes"); os.makedirs(SP,exist_ok=True)
+    DATA=os.environ.get("CIK_DATA",os.path.normpath(os.path.join(os.path.dirname(__file__),"..","..","data")))
+    SP=os.path.join(DATA,"shapes"); os.makedirs(SP,exist_ok=True)
     np.savez(f"{SP}/shape_v4cent_{tag}.npz", days=np.array(DAYS), **cent0)
     json.dump([{"cond":r[0],"pos":r[1],"scr":r[2],"cyc":r[3],"lin":r[4],"depth":(None if r[5]!=r[5] else r[5]),"closure":r[6],"partR":r[7],"l2l1":r[8]} for r in rows],
               open(f"{SP}/shape_v4_{tag}.json","w"),indent=2)

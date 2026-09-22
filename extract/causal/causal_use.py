@@ -21,13 +21,11 @@ Decisions: site=entity-token (query occ); op=OVERWRITE; sites=ALL entity sub-tok
 Saves raw per (context, layer, scramble, pair): generated answer + flags + span lengths (Standard #11).
 
 Usage: python -u causal_use.py <hf_model> [--nscr 2] [--concept days] [--maxnew 8]
-Out: data_dir("causal")/causaluse_<tag>.json + FIG_causaluse_<tag>.png
+Out: results/causal/causaluse_<tag>.json + FIG_causaluse_<tag>.png
 """
 import os, sys, json, re, numpy as np, torch, torch.nn as nn
 from transformers import AutoTokenizer, AutoModelForCausalLM, AutoConfig
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 
 MODEL=sys.argv[1]
 NSCR=int(sys.argv[sys.argv.index("--nscr")+1]) if "--nscr" in sys.argv else 2
@@ -39,8 +37,8 @@ ENT={"days":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sund
      "zodiac":["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"]}
 base=ENT[CONCEPT]; N=len(base)
 TPL="What is 1 step after {e}?"   # single canonical k=1 template (keep the patch clean)
-tag=MODEL.split("/")[-1]; os.makedirs(data_dir("causal"),exist_ok=True)
-OUT=os.path.join(data_dir("causal"), f"causaluse_{tag}{'' if CONCEPT=='days' else '_'+CONCEPT}.json")  # days keeps legacy name; others suffixed
+tag=MODEL.split("/")[-1]; os.makedirs("results/causal",exist_ok=True)
+OUT=f"results/causal/causaluse_{tag}{'' if CONCEPT=='days' else '_'+CONCEPT}.json"  # days keeps legacy name; others suffixed
 
 # --- prompt builders: imposed = F43 list-mode; natural = no redefinition (pretrained order) ---
 def make_def(order):
@@ -250,6 +248,6 @@ def plot(R):
     for i,v in enumerate([imp_self,nat_self]): ax2.text(i-w/2,v+.02,f"{v:.2f}",ha="center",fontsize=9)
     for i,v in enumerate([imp_oth,nat_oth]): ax2.text(i+w/2,v+.02,f"{v:.2f}",ha="center",fontsize=8)
     R["causal_layer"]=int(causal_L)
-    plt.tight_layout(); fn=os.path.join(data_dir("causal"), f"FIG_causaluse_{R['model'].split('/')[-1]}{'' if R['concept']=='days' else '_'+R['concept']}.png"); plt.savefig(fn,dpi=130); print("FIG",os.path.abspath(fn),"causal_L",causal_L,flush=True)
+    plt.tight_layout(); fn=f"results/causal/FIG_causaluse_{R['model'].split('/')[-1]}{'' if R['concept']=='days' else '_'+R['concept']}.png"; plt.savefig(fn,dpi=130); print("FIG",os.path.abspath(fn),"causal_L",causal_L,flush=True)
 
 if __name__=="__main__": main()

@@ -8,8 +8,6 @@ import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from scipy.stats import spearmanr
 from transformers import AutoTokenizer, AutoModelForCausalLM
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 
 MODEL="Qwen/Qwen3.5-27B"; N=7
 DAYS=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
@@ -17,7 +15,7 @@ THEIR=["Monday","Sunday","Tuesday","Friday","Wednesday","Saturday","Thursday"]
 NAT={d.lower():i for i,d in enumerate(DAYS)}; IMP={d.lower():i for i,d in enumerate(THEIR)}
 TPLS=["What is {k} steps after {e}?","{k} steps after {e} is?","From {e}, advance {k} steps. Which item?"]
 NAT_TPLS=["What is {k} days after {e}?","{k} days after {e} is what day?","From {e}, advance {k} days. Which day?"]
-KS=list(range(1,7)); OUT=os.path.join(data_dir("geometry"),"qwen_layer_sweep"); CACHE=OUT+"_acts.npz"
+KS=list(range(1,7)); OUT="results/geometry/qwen_layer_sweep"; CACHE=OUT+"_acts.npz"
 
 def scr_def():
     numbered="\n".join(f"{i+1}. {THEIR[i]}" for i in range(N)); doubled=" -> ".join(THEIR*2)

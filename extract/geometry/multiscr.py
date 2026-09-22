@@ -6,8 +6,6 @@ Usage: python -u multiscr.py <hf_model> --concepts days,notes [--nscr 6] [--base
 import os, sys, json, numpy as np, torch
 from scipy.stats import spearmanr
 from transformers import AutoTokenizer, AutoModelForCausalLM
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 
 MODEL=sys.argv[1]; IS_BASE="--base" in sys.argv; NOEX="--noexamples" in sys.argv
 NSCR=int(sys.argv[sys.argv.index("--nscr")+1]) if "--nscr" in sys.argv else 6
@@ -28,7 +26,7 @@ ENT={"days":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sund
 TPLS=["What is {k} steps after {e}?","{k} steps after {e} is?","From {e}, advance {k} steps. Which item?",
       "Starting at {e}, move {k} steps forward. Result?","{e} plus {k} steps =?","Advance {k} from {e}. Which one?"]
 tag=MODEL.split("/")[-1]+("_base" if IS_BASE else "")
-OUT=os.path.join(data_dir("geometry"), f"multiscr_{tag}.json")
+OUT=f"results/geometry/multiscr_{tag}.json"
 
 def deftext(order):
     N=len(order); numbered="\n".join(f"{i+1}. {order[i]}" for i in range(N)); doubled=" -> ".join(order*2)

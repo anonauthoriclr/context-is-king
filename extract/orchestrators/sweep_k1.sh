@@ -2,7 +2,7 @@
 # k=1 clean-cell sweep: instruct ladder, large->small. Per-model file-skip. Saves raw+traces+summary per model.
 set -u
 cd "$(dirname "$0")"
-PY="${VENV:-/path/to/gemma4u-venv/bin/python}"
+PY="${VENV_UNIFIED:-python}"
 MODE="${1:-list}"
 MODELS=( google/gemma-4-31B-it Qwen/Qwen3.5-27B google/gemma-4-12B-it Qwen/Qwen3.5-9B
          google/gemma-4-E4B-it Qwen/Qwen3.5-4B google/gemma-4-E2B-it meta-llama/Llama-3.1-8B-Instruct )

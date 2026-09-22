@@ -3,7 +3,7 @@
 # Rolls LARGE -> SMALL so high-signal big models land first. Per-model file-based skip.
 set -u
 cd "$(dirname "$0")"
-VENV="${VENV:-/path/to/gemma4u-venv}"
+VENV="${VENV_UNIFIED:?Set VENV_UNIFIED to the unified-model virtual-environment directory}"
 PY=$VENV/bin/python
 CONCEPT="${1:-days}"; MODES=list,adj; NSCR=2
 MODELS=(                         # large -> small

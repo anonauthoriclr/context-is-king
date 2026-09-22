@@ -2,7 +2,7 @@
 # E6+E7 single-load driver: each model loaded ONCE (cold loads were ~15-17 min). file-skip resumable. gemma4-venv.
 set -u
 cd "$(dirname "$0")"
-PY="${VENV:-/path/to/gemma4-venv/bin/python}"
+PY="${VENV:-python}"
 LOG=results/geometry/topo2_run.log
 mkdir -p results/geometry
 echo "=== TOPO2 start $(date) ===" | tee -a "$LOG"

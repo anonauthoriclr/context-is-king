@@ -9,8 +9,6 @@ import os, sys, json, numpy as np, torch
 from scipy.stats import spearmanr
 from transformers import AutoTokenizer, AutoModelForCausalLM, AutoConfig
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 
 MODEL = sys.argv[1]; FRACD = 0.75
 base = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]; N = 7
@@ -36,7 +34,7 @@ def last_end(ids, sub):
     return best
 
 def main():
-    tag = MODEL.split("/")[-1]; os.makedirs(data_dir("geometry"), exist_ok=True)
+    tag = MODEL.split("/")[-1]; os.makedirs("results/geometry", exist_ok=True)
     cfg = AutoConfig.from_pretrained(MODEL)
     nl = getattr(cfg,"num_hidden_layers",None) or getattr(getattr(cfg,"text_config",None),"num_hidden_layers",None)
     L = int(round(FRACD*nl)); print(f"NAT-SENTEND {MODEL} L={L}/{nl}", flush=True)
@@ -73,9 +71,9 @@ def main():
         rE,pE,dE = stats(cE); rD,pD,dD = stats(cD)
         out[name] = {"sentend":{"rsa":rE,"p":pE,"effdim":dE}, "daytok":{"rsa":rD,"p":pD,"effdim":dD}}
         print(f"  [{name:7s}] SENTEND rsa={rE:+.2f} p={pE:.3f} effdim={dE:.1f}  |  DAYTOK rsa={rD:+.2f} p={pD:.3f} effdim={dD:.1f}", flush=True)
-        np.savez(os.path.join(data_dir("geometry"), f"natsentend_{tag}_{name}.npz"), cent_sentend=cE, cent_daytok=cD, order=np.arange(N))
+        np.savez(f"results/geometry/natsentend_{tag}_{name}.npz", cent_sentend=cE, cent_daytok=cD, order=np.arange(N))
     del model; torch.cuda.empty_cache()
-    json.dump({"model":MODEL,"L":L,"nl":nl,"res":out}, open(os.path.join(data_dir("geometry"), f"natsentend_{tag}.json"),"w"), indent=2)
+    json.dump({"model":MODEL,"L":L,"nl":nl,"res":out}, open(f"results/geometry/natsentend_{tag}.json","w"), indent=2)
     # ring plot: query condition, sentence-end vs day-token, traced in the natural order
     fig,axs = plt.subplots(1,2,figsize=(8.4,4.2))
     for ax,(key,ttl) in zip(axs, [("sentend","SENTENCE-END (paper readout)"),("daytok","day token")]):
@@ -87,5 +85,5 @@ def main():
         for i,e in enumerate(base): ax.annotate(e[:3],(P[i,0],P[i,1]),fontsize=7,ha="center",va="center")
         ax.set_xticks([]); ax.set_yticks([]); ax.set_title(f"{ttl}\ncyclic RSA={out['query'][key]['rsa']:+.2f}, eff-dim={out['query'][key]['effdim']:.1f}",fontsize=9)
     fig.suptitle(f"{tag}: NATURAL (no-context) weekday ring, traced in pretrained order (red = wrap edge)",fontsize=11)
-    fig.tight_layout(); fn=os.path.join(data_dir("geometry"), f"FIG_natsentend_{tag}.png"); fig.savefig(fn,dpi=140); print("SAVED",os.path.abspath(fn),flush=True)
+    fig.tight_layout(); fn=f"results/geometry/FIG_natsentend_{tag}.png"; fig.savefig(fn,dpi=140); print("SAVED",os.path.abspath(fn),flush=True)
 if __name__=="__main__": main()

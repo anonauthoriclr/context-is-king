@@ -21,8 +21,6 @@ import os, sys, json, numpy as np, torch
 from scipy.stats import spearmanr
 from transformers import AutoTokenizer, AutoModelForCausalLM, AutoConfig
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 
 NSCR = int(sys.argv[sys.argv.index("--nscr")+1]) if "--nscr" in sys.argv else 3
 FORCE = "--force" in sys.argv
@@ -35,7 +33,7 @@ TPLS = ["What is {k} steps after {e}?", "From {e}, advance {k} steps. Which item
 CONDS = ["list", "list_wrap", "list_wrap_pos", "list_comention"]
 MODELS = [sys.argv[sys.argv.index("--model")+1]] if "--model" in sys.argv else \
          ["google/gemma-4-31B-it", "Qwen/Qwen3.5-27B"]
-OUTDIR = data_dir("behavior")
+OUTDIR = "results/behavior"
 
 def make_def(mode, order, rng):
     numbered = "\n".join(f"{i+1}. {order[i]}" for i in range(N))

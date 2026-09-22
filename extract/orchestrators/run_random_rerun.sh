@@ -1,6 +1,6 @@
 #!/bin/bash
 set -u; cd "$(dirname "$0")"
-PY="${VENV:-/path/to/gemma4-venv/bin/python}"
+PY="${VENV:-python}"
 LOG=results/geometry/random_rerun.log
 echo "=== waiting for Gemma chess-imposed to free GPU $(date) ===" | tee -a "$LOG"
 while pgrep -f "topo_driver.py google/gemma-4-31B-it --configs chess-imposed" >/dev/null 2>&1; do sleep 10; done

@@ -10,8 +10,6 @@ Caches captured activations to .npz keyed by (model,condition) → re-analysis l
 import os, sys, json, hashlib, numpy as np, torch
 from scipy.stats import spearmanr
 from transformers import AutoTokenizer, AutoModelForCausalLM
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 
 MODEL=sys.argv[1]; IS_BASE="--base" in sys.argv
 FRAC=float(sys.argv[sys.argv.index("--frac")+1]) if "--frac" in sys.argv else 0.75
@@ -22,7 +20,7 @@ TPLS=["What is {k} steps after {e}?","{k} steps after {e} is?","From {e}, advanc
 NAT_TPLS=["What is {k} days after {e}?","{k} days after {e} is what day?","From {e}, advance {k} days. Which day?"]
 KS=list(range(1,7))
 tag=MODEL.split("/")[-1]+("_base" if IS_BASE else "")
-OUT=os.path.join(data_dir("geometry"), f"famcert_{tag}"); CACHE=OUT+"_acts.npz"
+OUT=f"results/geometry/famcert_{tag}"; CACHE=OUT+"_acts.npz"
 
 def deftext(order,label,unit,redefined):
     idx={x.lower():i for i,x in enumerate(order)}

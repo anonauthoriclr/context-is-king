@@ -15,7 +15,7 @@ from scipy.stats import t as tdist, spearmanr
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 _OUT = os.environ.get("CIK_OUT", os.path.join(HERE, "output")); os.makedirs(_OUT, exist_ok=True)
-DATA = os.environ.get("CIK_DATA", os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data")))
+DATA = os.environ.get("CIK_DATA", os.path.normpath(os.path.join(HERE, "..", "data")))
 G = os.path.join(DATA, "geometry")
 CACHE = os.path.join(G, "cache")
 IMP_COL, NAT_COL, INK, REV = "#1b7837", "#8a93a3", "#1d2430", "#c0392b"
@@ -55,7 +55,7 @@ for (yy, im, ih, nm, nh, gap) in rows:
     if gap < 0: axd.plot([nm, im], [yy, yy], "-", color=REV, lw=2.0, zorder=1)
     axd.errorbar(nm, yy, xerr=nh, fmt="o", color=NAT_COL, ms=8, capsize=3, zorder=3)
     axd.errorbar(im, yy, xerr=ih, fmt="o", color=IMP_COL, ms=8, capsize=3, zorder=3)
-    if gap < 0: axd.annotate("reverses", (max(im,nm)+0.04, yy), va="center", fontsize=8, color=REV, fontstyle="italic")
+    if gap < 0: axd.annotate("reverses", (max(im,nm)-0.06, yy+0.16), va="bottom", ha="center", fontsize=8, color=REV, fontstyle="italic")
 blend = mtrans.blended_transform_factory(axd.transAxes, axd.transData)
 for fam, ytop, ybot in spans:
     axd.text(-0.165, (ytop+ybot)/2, fam, rotation=90, va="center", ha="center", fontsize=11,

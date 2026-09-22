@@ -9,13 +9,11 @@ MDS acceptance view. Graphs: hypercube Q3 (b1=5, genuinely 3-D), petersen (b1=6,
 name), and random-diff (B = A with --diff edges swapped — the differential-edge control for true construction).
 Usage: python -u geom_topo.py <hf_model> --graph {hypercube|petersen|random} [--n 9 --b1 3 --seed 0 --diff 0]
                                         [--nscr 6] [--qset rel|neutral]
-Out: data_dir("geometry")/topo_<graph><tags>_<model>.json (+ .npz)"""
+Out: results/geometry/topo_<graph><tags>_<model>.json (+ .npz)"""
 import os, sys, json, numpy as np, torch
 from collections import deque
 from scipy.stats import spearmanr
 from transformers import AutoTokenizer, AutoModelForCausalLM, AutoConfig
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 
 MODEL=sys.argv[1]
 def arg(flag,default,cast=str):
@@ -108,7 +106,7 @@ TPLS=QW[QSET]
 PRE=("You are operating under a REDEFINED link structure. The ONLY valid 'directly linked' relations apply below.")
 SUFFIX="" if QSET=="neutral" else "\n\nAnswer with ONLY the name(s), nothing else."
 tag=NAME+("" if QSET=="rel" else f"_{QSET}"); mtag=MODEL.split("/")[-1]
-os.makedirs(data_dir("geometry"),exist_ok=True); OUT=os.path.join(data_dir("geometry"), f"topo_{tag}_{mtag}.json")
+os.makedirs("results/geometry",exist_ok=True); OUT=f"results/geometry/topo_{tag}_{mtag}.json"
 
 def make_def(perm,rng):  # perm[k]=token at node k; atomic undirected edges, shuffled
     es=[f"- {perm[a]} is directly linked to {perm[b]}." for (a,b) in E]
@@ -170,7 +168,7 @@ def main():
               n_self_beats_line=int(sum(s["rsa_self"]>s["rsa_line"] for s in stats)),
               nsig_emp=int(sum(s["p_emp"]<0.05 for s in stats)))
     json.dump(summ,open(OUT,"w"),indent=2)
-    np.savez(os.path.join(data_dir("geometry"), f"topo_{tag}_{mtag}.npz"),**{f"c{si}":allc[si][0] for si in range(NSCR)},
+    np.savez(f"results/geometry/topo_{tag}_{mtag}.npz",**{f"c{si}":allc[si][0] for si in range(NSCR)},
              nodes=np.array([allc[si][1] for si in range(NSCR)]),tok=np.array(TOKK),
              edges=np.array(sorted([list(e) for e in E])),geo=GEO,L=L)
     print(f"== {tag}/{mtag}: self {summ['rsa_self']:+.2f}±{summ['rsa_self_std']:.2f} (line {summ['rsa_line']:+.2f} "

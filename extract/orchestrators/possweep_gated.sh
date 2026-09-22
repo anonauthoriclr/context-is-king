@@ -1,7 +1,7 @@
 #!/bin/bash
 set -u
-cd "${ROOT:-/path/to/context-is-king/extract}"
-VPY="${VENV:-/path/to/gemma4u-venv/bin/python}"
+cd "${ROOT:?Set ROOT to the extraction working directory}"
+VPY="${VENV_UNIFIED:-python}"
 LOG=logs/possweep_rerun.log; mkdir -p logs
 echo "[gated] $(date) waiting for >=62GB free GPU" >> "$LOG"
 while true; do free=$(nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits|head -1); [ "$free" -ge 62000 ] && break; sleep 30; done

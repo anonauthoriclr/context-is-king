@@ -11,8 +11,6 @@ do NOT load on the gemma4-venv transformers (5.5.3); 31B-it and Qwen-3.5 load. R
 Usage: python -u behavior_3regime.py [--model google/gemma-4-31B-it] [--concept days] [--maxnew 2048] [--force]"""
 import os, sys, json, re, numpy as np, torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, AutoConfig
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 
 CONCEPT = sys.argv[sys.argv.index("--concept")+1] if "--concept" in sys.argv else "days"
 MAXNEW = int(sys.argv[sys.argv.index("--maxnew")+1]) if "--maxnew" in sys.argv else 2048
@@ -24,7 +22,7 @@ TPLS = ["What is {k} steps after {e}?", "From {e}, advance {k} steps. Which item
 MODELS = [sys.argv[sys.argv.index("--model")+1]] if "--model" in sys.argv else \
          ["google/gemma-4-31B-it", "Qwen/Qwen3.5-27B"]
 REGIMES = ["direct", "scripted", "natural"]
-OUTDIR = data_dir("behavior")
+OUTDIR = "results/behavior"
 
 def make_def(order, rng):  # zero-shot list, identical convention to defladder
     numbered = "\n".join(f"{i+1}. {order[i]}" for i in range(N))

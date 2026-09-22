@@ -1,7 +1,7 @@
 #!/bin/bash
 # Fires after E2 (Qwen-CoT) frees the GPU: E4 tree (lead, 3 models) → E1 arb-token 2x2. File-skip/resumable. gemma4-venv.
-cd "${ROOT:-/path/to/context-is-king/extract}"
-V="${VENV:-/path/to/gemma4-venv}"
+cd "${ROOT:?Set ROOT to the extraction working directory}"
+V="${VENV:?Set VENV to the virtual-environment directory}"
 export HF_HUB_DISABLE_PROGRESS_BARS=1 TRANSFORMERS_VERBOSITY=error
 D=results; log(){ echo "[$(date +%H:%M:%S)] $*"; }
 gpu_free(){ while nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits | awk '{exit ($1>5000)?0:1}'; do sleep 15; done; }

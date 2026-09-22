@@ -2,7 +2,7 @@
 # E6 (chess native 2-D / store) + E7 (complex novel topology / construct). Forward-only, file-skip resumable. gemma4-venv.
 set -u
 cd "$(dirname "$0")"
-V="${VENV:-/path/to/gemma4-venv}"
+V="${VENV:?Set VENV to the virtual-environment directory}"
 PY=$V/bin/python
 LOG=results/geometry/topo_run.log
 mkdir -p results/geometry

@@ -3,7 +3,7 @@
 # Part B flag-invariance (vs F43 cache) + Part A CoT behavior (2048 tok). Large->small, file-skip.
 set -u
 cd "$(dirname "$0")"
-VENV="${VENV:-/path/to/gemma4u-venv}"
+VENV="${VENV_UNIFIED:?Set VENV_UNIFIED to the unified-model virtual-environment directory}"
 PY=$VENV/bin/python
 CONCEPT="${1:-days}"
 MODELS=( google/gemma-4-31B-it google/gemma-4-12B-it Qwen/Qwen3.5-27B )

@@ -3,7 +3,7 @@
 # SSH-resilient: setsid+nohup launcher; per-model file-based skip; defladder also skips model-load when acts cached.
 set -u
 cd "$(dirname "$0")"
-VENV="${VENV:-/path/to/gemma4u-venv}"
+VENV="${VENV_UNIFIED:?Set VENV_UNIFIED to the unified-model virtual-environment directory}"
 PY=$VENV/bin/python
 CONCEPT=days; MODES=list,adj; NSCR=3
 MODELS=(

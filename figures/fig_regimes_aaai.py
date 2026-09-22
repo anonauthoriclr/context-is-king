@@ -15,38 +15,39 @@ from matplotlib.lines import Line2D
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 _OUT = os.environ.get("CIK_OUT", os.path.join(HERE, "output")); os.makedirs(_OUT, exist_ok=True)
-DATA = os.environ.get("CIK_DATA", os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data")))
+DATA = os.environ.get("CIK_DATA", os.path.normpath(os.path.join(HERE, "..", "data")))
 B = os.path.join(DATA, "behavior")
-MODELS = [("Gemma-4-31B", "gemma-4-31B-it"), ("Qwen-3.5-27B", "Qwen3.5-27B")]
+MODELS = [("Gemma-31B", "gemma-4-31B-it"), ("Qwen-27B", "Qwen3.5-27B")]
 REGIMES = [("direct", "#d95f02", "-"), ("scripted", "#1b7837", "-"), ("natural", "#762a83", "-")]
 DISPLAY = {"direct": "direct", "scripted": "scripted", "natural": "free-form"}  # data key 'natural' -> label
 KS = list(range(1, 7)); INK = "#1d2430"
-fig, axes = plt.subplots(1, 2, figsize=(8.0, 3.6), sharey=True); fig.patch.set_facecolor("white")
+fig, axes = plt.subplots(1, 2, figsize=(3.5, 2.35), sharey=True); fig.patch.set_facecolor("white")
+# distinct marker + small x-offset per regime so coincident curves (Gemma scripted==free-form==1.0) stay visible
+STYLE = {"direct": ("o", -0.10, 3.6), "scripted": ("s", 0.0, 3.6), "natural": ("D", 0.10, 3.2)}
 for ax, (lab, m) in zip(axes, MODELS):
     d = json.load(open(os.path.join(B, f"behavior3_{m}_days.json")))["regimes"]
-    ax.axhline(1/7, color="#c2c7d0", lw=1.5, ls=":", zorder=1)
-    # distinct marker + small x-offset per regime so coincident curves (e.g. Gemma scripted==natural==1.0) stay visible
-    STYLE = {"direct": ("o", -0.10, 4.5), "scripted": ("s", 0.0, 4.5), "natural": ("D", 0.10, 4.0)}
+    ax.axhline(1/7, color="#c2c7d0", lw=1.0, ls=":", zorder=1)
     for ri, (reg, col, ls) in enumerate(REGIMES):
         kc = [d[reg]["kcurve_imp"][str(k)] for k in KS]
         trunc = d[reg].get("trunc_rate", 0.0); dashed = trunc > 0.2
         mk, dx, ms = STYLE[reg]; xs = [k + dx for k in KS]
-        ax.plot(xs, kc, ls=("--" if dashed else "-"), color=col, lw=3.4, marker=mk, ms=ms,
-                markeredgecolor="white", markeredgewidth=0.6, zorder=3 + ri, alpha=(0.8 if dashed else 1.0))
+        ax.plot(xs, kc, ls=("--" if dashed else "-"), color=col, lw=1.7, marker=mk, ms=ms,
+                markeredgecolor="white", markeredgewidth=0.5, zorder=3 + ri, alpha=(0.85 if dashed else 1.0))
         if dashed:
-            ax.text(xs[-1], kc[-1], f"  {int(round(trunc*100))}% over budget", fontsize=18.2, color=col, va="center")
-    ax.set_title(lab, fontsize=27.3, color=INK, pad=3)
-    ax.set_xlabel("hop count $k$", fontsize=24.7, color=INK); ax.set_xticks(KS)
+            ax.text(0.52, 0.55, f"{int(round(trunc*100))}% over\nbudget", transform=ax.transAxes,
+                    ha="center", fontsize=6.5, color=col, linespacing=0.95)
+    ax.set_title(lab, fontsize=8.5, color=INK, pad=3)
+    ax.set_xlabel("hop count $k$", fontsize=8, color=INK); ax.set_xticks(KS)
     ax.set_ylim(-0.03, 1.06)
     for s in ["top", "right"]: ax.spines[s].set_visible(False)
     for s in ["left", "bottom"]: ax.spines[s].set_color("#c2c7d0")
-    ax.tick_params(labelsize=22.1, length=0)
-axes[0].set_ylabel("imposed-order accuracy", fontsize=24.7, color=INK)
-handles = [Line2D([0], [0], color=c, marker=STYLE[r][0], ms=4.5, label=DISPLAY[r]) for r, c, _ in REGIMES] + \
+    ax.tick_params(labelsize=6.5, length=0)
+axes[0].set_ylabel("imposed-order acc.", fontsize=8, color=INK)
+handles = [Line2D([0], [0], color=c, marker=STYLE[r][0], ms=3.6, label=DISPLAY[r]) for r, c, _ in REGIMES] + \
           [Line2D([0], [0], color="#c2c7d0", ls=":", label="chance (1/7)"),
            Line2D([0], [0], color="#762a83", ls="--", alpha=0.75, label="exceeds 2048-tok budget")]
-fig.legend(handles=handles, loc="lower center", ncol=5, frameon=False, fontsize=22.1, bbox_to_anchor=(0.5, -0.06))
-fig.subplots_adjust(left=0.08, right=0.985, top=0.92, bottom=0.22, wspace=0.08)
+fig.legend(handles=handles, loc="lower center", ncol=3, frameon=False, fontsize=6.8, bbox_to_anchor=(0.5, -0.01))
+fig.subplots_adjust(left=0.13, right=0.975, top=0.88, bottom=0.30, wspace=0.12)
 out = os.path.join(_OUT, "fig_regimes_aaai")
 fig.savefig(out + ".pdf", bbox_inches="tight"); fig.savefig(out + ".png", dpi=170, bbox_inches="tight")
 print("WROTE", out)

@@ -13,13 +13,11 @@ Probe: declare the grid (visual block) or shuffled atomic edges (--sepedges, co-
 centroid RDM vs grid/line/ring RDM (Spearman). Null: cone-preserving label-shuffle (permute token<->cell), EMPIRICAL
 tail p-value (not sigma). Controls: nscr token->cell scrambles, --sepedges, --qset neutral, column signature.
 Usage: python -u geom_grid.py <hf_model> [--nscr 6] [--sepedges] [--qset rel|neutral] [--base]
-Out: data_dir("geometry")/grid_<tag>.json (+ .npz) + FIG_grid_<tag>.png"""
+Out: results/geometry/grid_<tag>.json (+ .npz) + FIG_grid_<tag>.png"""
 import os, sys, json, numpy as np, torch
 from scipy.stats import spearmanr
 from transformers import AutoTokenizer, AutoModelForCausalLM, AutoConfig
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 
 MODEL=sys.argv[1]; IS_BASE="--base" in sys.argv
 SEPEDGES="--sepedges" in sys.argv   # co-occurrence control: atomic shuffled edges, row/col mates NOT co-listed
@@ -38,7 +36,7 @@ if QSET=="neutral":  # DECISIVE CONTROL: present entity in the grid context, ask
     TPLS=["Consider the item {e}.","Take note of the item {e}.","The item under discussion is {e}.",
           "Focus on this item: {e}.","Here is an item from the set: {e}.","Item of interest: {e}."]
 tag=MODEL.split("/")[-1]+("_base" if IS_BASE else "")+("" if QSET=="rel" else f"_{QSET}")+("_sep" if SEPEDGES else "")
-os.makedirs(data_dir("geometry"),exist_ok=True); OUT=os.path.join(data_dir("geometry"), f"grid_{tag}.json")
+os.makedirs("results/geometry",exist_ok=True); OUT=f"results/geometry/grid_{tag}.json"
 
 def grid_dist():  # 9x9 Manhattan distance on (row,col); + line (reading-order) and ring templates
     D=np.array([[abs(COORD[i][0]-COORD[j][0])+abs(COORD[i][1]-COORD[j][1]) for j in range(N)] for i in range(N)],float)
@@ -132,7 +130,7 @@ def main():
               nsig_emp=int(sum(s["p_emp"]<0.05 for s in stats)),
               nbeats_line=int(sum(s["dRSA_grid_minus_lin"]>0 for s in stats)))
     json.dump(summ,open(OUT,"w"),indent=2)
-    np.savez(os.path.join(data_dir("geometry"), f"grid_{tag}.npz"),**{f"c{si}":allc[si][0] for si in range(NSCR)},
+    np.savez(f"results/geometry/grid_{tag}.npz",**{f"c{si}":allc[si][0] for si in range(NSCR)},
              cells=np.array([allc[si][1] for si in range(NSCR)]),tok=np.array(TOK9),L=L)
     print(f"== {tag}: RSA_grid {summ['rsa_grid']:+.2f}±{summ['rsa_grid_std']:.2f} (lin {summ['rsa_linear']:+.2f}, "
           f"ring {summ['rsa_ring']:+.2f}, dRSA grid-lin {summ['dRSA_grid_lin']:+.2f}) col_sig {summ['col_sig']:+.2f} "
@@ -155,5 +153,5 @@ def main():
     ax2.bar(x+0.1,rr,0.2,label="RSA vs ring",color="C2",alpha=.7); ax2.bar(x+0.3,nm,0.2,label="null mean",color="gray",alpha=.6)
     ax2.set_xticks(x); ax2.set_xticklabels([f"s{i+1}" for i in range(NSCR)]); ax2.set_ylim(-.3,1); ax2.legend(fontsize=8)
     ax2.set_title("Geometry matches imposed 2-D GRID (beats line)?"); ax2.axhline(0,color="k",lw=.5)
-    plt.tight_layout(); fn=os.path.join(data_dir("geometry"), f"FIG_grid_{tag}.png"); plt.savefig(fn,dpi=130); print("FIG",os.path.abspath(fn),flush=True)
+    plt.tight_layout(); fn=f"results/geometry/FIG_grid_{tag}.png"; plt.savefig(fn,dpi=130); print("FIG",os.path.abspath(fn),flush=True)
 if __name__=="__main__": main()

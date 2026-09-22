@@ -1,7 +1,7 @@
 #!/bin/bash
 set -u
-cd "${ROOT:-/path/to/context-is-king/extract}"
-VPY="${VENV:-/path/to/gemma4u-venv/bin/python}"
+cd "${ROOT:?Set ROOT to the extraction working directory}"
+VPY="${VENV_UNIFIED:-python}"
 LOG=logs/diverse_gated.log; mkdir -p logs
 echo "[gated] $(date) waiting for >=62GB free GPU" >> "$LOG"
 while true; do

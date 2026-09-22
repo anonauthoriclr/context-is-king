@@ -1,0 +1,384 @@
+{
+  "model": "Qwen/Qwen3.5-27B",
+  "concept": "days",
+  "context": "imposed",
+  "n_orders": 3,
+  "parser": {
+    "rule": "last entity mention after the final </think> delimiter",
+    "missing_visible_response": "NA"
+  },
+  "sources": [
+    {
+      "file": "causalcot_Qwen3.5-27B.json",
+      "sha256": "dad891c574f1cf4f85817a5d1434edac2a099e6958c56fb87ee03e8cb909c542"
+    },
+    {
+      "file": "causalcot_Qwen3.5-27B_scr3_imposed_raw.json",
+      "sha256": "4e80b70d6791a5098052f11338f54949c7e7d1a88d9da21231a068915d9c67f7"
+    }
+  ],
+  "per_order": [
+    {
+      "order": [
+        "Wednesday",
+        "Friday",
+        "Thursday",
+        "Sunday",
+        "Saturday",
+        "Monday",
+        "Tuesday"
+      ],
+      "baseline_correct": 7,
+      "baseline_total": 7,
+      "layers": {
+        "6": {
+          "n_clean": 42,
+          "patch_success_clean": 1.0,
+          "visible_final_rate": 1.0,
+          "stuck_source_clean": 0.0,
+          "n_diagnostic": 30,
+          "diagnostic_own_count": 30,
+          "diagnostic_pretrained_alternative_count": 0
+        },
+        "13": {
+          "n_clean": 42,
+          "patch_success_clean": 1.0,
+          "visible_final_rate": 1.0,
+          "stuck_source_clean": 0.0,
+          "n_diagnostic": 30,
+          "diagnostic_own_count": 30,
+          "diagnostic_pretrained_alternative_count": 0
+        },
+        "19": {
+          "n_clean": 42,
+          "patch_success_clean": 1.0,
+          "visible_final_rate": 1.0,
+          "stuck_source_clean": 0.0,
+          "n_diagnostic": 30,
+          "diagnostic_own_count": 30,
+          "diagnostic_pretrained_alternative_count": 0
+        },
+        "29": {
+          "n_clean": 42,
+          "patch_success_clean": 0.9761904761904762,
+          "visible_final_rate": 0.9761904761904762,
+          "stuck_source_clean": 0.0,
+          "n_diagnostic": 30,
+          "diagnostic_own_count": 30,
+          "diagnostic_pretrained_alternative_count": 0
+        },
+        "38": {
+          "n_clean": 42,
+          "patch_success_clean": 0.40476190476190477,
+          "visible_final_rate": 0.40476190476190477,
+          "stuck_source_clean": 0.0,
+          "n_diagnostic": 30,
+          "diagnostic_own_count": 8,
+          "diagnostic_pretrained_alternative_count": 0
+        },
+        "45": {
+          "n_clean": 42,
+          "patch_success_clean": 0.023809523809523808,
+          "visible_final_rate": 0.023809523809523808,
+          "stuck_source_clean": 0.0,
+          "n_diagnostic": 30,
+          "diagnostic_own_count": 1,
+          "diagnostic_pretrained_alternative_count": 0
+        },
+        "48": {
+          "n_clean": 42,
+          "patch_success_clean": 0.023809523809523808,
+          "visible_final_rate": 0.09523809523809523,
+          "stuck_source_clean": 0.07142857142857142,
+          "n_diagnostic": 30,
+          "diagnostic_own_count": 1,
+          "diagnostic_pretrained_alternative_count": 0
+        },
+        "54": {
+          "n_clean": 42,
+          "patch_success_clean": 0.0,
+          "visible_final_rate": 0.9761904761904762,
+          "stuck_source_clean": 0.9761904761904762,
+          "n_diagnostic": 30,
+          "diagnostic_own_count": 0,
+          "diagnostic_pretrained_alternative_count": 5
+        },
+        "61": {
+          "n_clean": 42,
+          "patch_success_clean": 0.0,
+          "visible_final_rate": 1.0,
+          "stuck_source_clean": 1.0,
+          "n_diagnostic": 30,
+          "diagnostic_own_count": 0,
+          "diagnostic_pretrained_alternative_count": 5
+        }
+      }
+    },
+    {
+      "order": [
+        "Saturday",
+        "Wednesday",
+        "Friday",
+        "Sunday",
+        "Tuesday",
+        "Monday",
+        "Thursday"
+      ],
+      "baseline_correct": 7,
+      "baseline_total": 7,
+      "layers": {
+        "6": {
+          "n_clean": 42,
+          "patch_success_clean": 1.0,
+          "visible_final_rate": 1.0,
+          "stuck_source_clean": 0.0,
+          "n_diagnostic": 42,
+          "diagnostic_own_count": 42,
+          "diagnostic_pretrained_alternative_count": 0
+        },
+        "13": {
+          "n_clean": 42,
+          "patch_success_clean": 1.0,
+          "visible_final_rate": 1.0,
+          "stuck_source_clean": 0.0,
+          "n_diagnostic": 42,
+          "diagnostic_own_count": 42,
+          "diagnostic_pretrained_alternative_count": 0
+        },
+        "19": {
+          "n_clean": 42,
+          "patch_success_clean": 1.0,
+          "visible_final_rate": 1.0,
+          "stuck_source_clean": 0.0,
+          "n_diagnostic": 42,
+          "diagnostic_own_count": 42,
+          "diagnostic_pretrained_alternative_count": 0
+        },
+        "29": {
+          "n_clean": 42,
+          "patch_success_clean": 0.9523809523809523,
+          "visible_final_rate": 0.9523809523809523,
+          "stuck_source_clean": 0.0,
+          "n_diagnostic": 42,
+          "diagnostic_own_count": 40,
+          "diagnostic_pretrained_alternative_count": 0
+        },
+        "38": {
+          "n_clean": 42,
+          "patch_success_clean": 0.5714285714285714,
+          "visible_final_rate": 0.5714285714285714,
+          "stuck_source_clean": 0.0,
+          "n_diagnostic": 42,
+          "diagnostic_own_count": 24,
+          "diagnostic_pretrained_alternative_count": 0
+        },
+        "45": {
+          "n_clean": 42,
+          "patch_success_clean": 0.0,
+          "visible_final_rate": 0.0,
+          "stuck_source_clean": 0.0,
+          "n_diagnostic": 42,
+          "diagnostic_own_count": 0,
+          "diagnostic_pretrained_alternative_count": 0
+        },
+        "48": {
+          "n_clean": 42,
+          "patch_success_clean": 0.0,
+          "visible_final_rate": 0.19047619047619047,
+          "stuck_source_clean": 0.19047619047619047,
+          "n_diagnostic": 42,
+          "diagnostic_own_count": 0,
+          "diagnostic_pretrained_alternative_count": 1
+        },
+        "54": {
+          "n_clean": 42,
+          "patch_success_clean": 0.0,
+          "visible_final_rate": 1.0,
+          "stuck_source_clean": 1.0,
+          "n_diagnostic": 42,
+          "diagnostic_own_count": 0,
+          "diagnostic_pretrained_alternative_count": 7
+        },
+        "61": {
+          "n_clean": 42,
+          "patch_success_clean": 0.0,
+          "visible_final_rate": 1.0,
+          "stuck_source_clean": 1.0,
+          "n_diagnostic": 42,
+          "diagnostic_own_count": 0,
+          "diagnostic_pretrained_alternative_count": 7
+        }
+      }
+    },
+    {
+      "order": [
+        "Wednesday",
+        "Tuesday",
+        "Thursday",
+        "Sunday",
+        "Monday",
+        "Friday",
+        "Saturday"
+      ],
+      "baseline_correct": 7,
+      "baseline_total": 7,
+      "layers": {
+        "6": {
+          "n_clean": 42,
+          "patch_success_clean": 1.0,
+          "visible_final_rate": 1.0,
+          "stuck_source_clean": 0.0,
+          "n_diagnostic": 30,
+          "diagnostic_own_count": 30,
+          "diagnostic_pretrained_alternative_count": 0
+        },
+        "13": {
+          "n_clean": 42,
+          "patch_success_clean": 1.0,
+          "visible_final_rate": 1.0,
+          "stuck_source_clean": 0.0,
+          "n_diagnostic": 30,
+          "diagnostic_own_count": 30,
+          "diagnostic_pretrained_alternative_count": 0
+        },
+        "19": {
+          "n_clean": 42,
+          "patch_success_clean": 1.0,
+          "visible_final_rate": 1.0,
+          "stuck_source_clean": 0.0,
+          "n_diagnostic": 30,
+          "diagnostic_own_count": 30,
+          "diagnostic_pretrained_alternative_count": 0
+        },
+        "29": {
+          "n_clean": 42,
+          "patch_success_clean": 0.9523809523809523,
+          "visible_final_rate": 0.9523809523809523,
+          "stuck_source_clean": 0.0,
+          "n_diagnostic": 30,
+          "diagnostic_own_count": 29,
+          "diagnostic_pretrained_alternative_count": 0
+        },
+        "38": {
+          "n_clean": 42,
+          "patch_success_clean": 0.3333333333333333,
+          "visible_final_rate": 0.3333333333333333,
+          "stuck_source_clean": 0.0,
+          "n_diagnostic": 30,
+          "diagnostic_own_count": 8,
+          "diagnostic_pretrained_alternative_count": 0
+        },
+        "45": {
+          "n_clean": 42,
+          "patch_success_clean": 0.0,
+          "visible_final_rate": 0.0,
+          "stuck_source_clean": 0.0,
+          "n_diagnostic": 30,
+          "diagnostic_own_count": 0,
+          "diagnostic_pretrained_alternative_count": 0
+        },
+        "48": {
+          "n_clean": 42,
+          "patch_success_clean": 0.0,
+          "visible_final_rate": 0.07142857142857142,
+          "stuck_source_clean": 0.07142857142857142,
+          "n_diagnostic": 30,
+          "diagnostic_own_count": 0,
+          "diagnostic_pretrained_alternative_count": 1
+        },
+        "54": {
+          "n_clean": 42,
+          "patch_success_clean": 0.0,
+          "visible_final_rate": 1.0,
+          "stuck_source_clean": 1.0,
+          "n_diagnostic": 30,
+          "diagnostic_own_count": 0,
+          "diagnostic_pretrained_alternative_count": 5
+        },
+        "61": {
+          "n_clean": 42,
+          "patch_success_clean": 0.0,
+          "visible_final_rate": 1.0,
+          "stuck_source_clean": 1.0,
+          "n_diagnostic": 30,
+          "diagnostic_own_count": 0,
+          "diagnostic_pretrained_alternative_count": 5
+        }
+      }
+    }
+  ],
+  "aggregate_by_layer": {
+    "6": {
+      "mean_patch_success_across_orders": 1.0,
+      "mean_visible_final_rate_across_orders": 1.0,
+      "total_clean": 126,
+      "total_diagnostic": 102,
+      "diagnostic_own_count": 102,
+      "diagnostic_pretrained_alternative_count": 0
+    },
+    "13": {
+      "mean_patch_success_across_orders": 1.0,
+      "mean_visible_final_rate_across_orders": 1.0,
+      "total_clean": 126,
+      "total_diagnostic": 102,
+      "diagnostic_own_count": 102,
+      "diagnostic_pretrained_alternative_count": 0
+    },
+    "19": {
+      "mean_patch_success_across_orders": 1.0,
+      "mean_visible_final_rate_across_orders": 1.0,
+      "total_clean": 126,
+      "total_diagnostic": 102,
+      "diagnostic_own_count": 102,
+      "diagnostic_pretrained_alternative_count": 0
+    },
+    "29": {
+      "mean_patch_success_across_orders": 0.9603174603174603,
+      "mean_visible_final_rate_across_orders": 0.9603174603174603,
+      "total_clean": 126,
+      "total_diagnostic": 102,
+      "diagnostic_own_count": 99,
+      "diagnostic_pretrained_alternative_count": 0
+    },
+    "38": {
+      "mean_patch_success_across_orders": 0.4365079365079365,
+      "mean_visible_final_rate_across_orders": 0.4365079365079365,
+      "total_clean": 126,
+      "total_diagnostic": 102,
+      "diagnostic_own_count": 40,
+      "diagnostic_pretrained_alternative_count": 0
+    },
+    "45": {
+      "mean_patch_success_across_orders": 0.007936507936507936,
+      "mean_visible_final_rate_across_orders": 0.007936507936507936,
+      "total_clean": 126,
+      "total_diagnostic": 102,
+      "diagnostic_own_count": 1,
+      "diagnostic_pretrained_alternative_count": 0
+    },
+    "48": {
+      "mean_patch_success_across_orders": 0.007936507936507936,
+      "mean_visible_final_rate_across_orders": 0.11904761904761903,
+      "total_clean": 126,
+      "total_diagnostic": 102,
+      "diagnostic_own_count": 1,
+      "diagnostic_pretrained_alternative_count": 2
+    },
+    "54": {
+      "mean_patch_success_across_orders": 0.0,
+      "mean_visible_final_rate_across_orders": 0.9920634920634921,
+      "total_clean": 126,
+      "total_diagnostic": 102,
+      "diagnostic_own_count": 0,
+      "diagnostic_pretrained_alternative_count": 17
+    },
+    "61": {
+      "mean_patch_success_across_orders": 0.0,
+      "mean_visible_final_rate_across_orders": 1.0,
+      "total_clean": 126,
+      "total_diagnostic": 102,
+      "diagnostic_own_count": 0,
+      "diagnostic_pretrained_alternative_count": 17
+    }
+  }
+}

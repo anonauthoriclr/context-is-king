@@ -5,11 +5,9 @@ Reads:  causalcot_<tag>.json  + judge_out/*.json  ({hash: {"answer": <entity|NON
 Writes: causalcot_<tag>_judged.json  and prints a summary (imposed/natural patch_success per layer,
         baseline acc from the judge, and judge-vs-regex agreement).
 
-Usage: python apply_judge.py data_dir("causal")/causalcot_Qwen3.5-27B.json
+Usage: python apply_judge.py results/causal/causalcot_Qwen3.5-27B.json
 """
 import os, sys, json, glob, hashlib
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 
 NATURAL = {
     "days":   ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],

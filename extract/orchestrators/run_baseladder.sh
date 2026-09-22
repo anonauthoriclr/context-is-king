@@ -2,7 +2,7 @@
 # Clean BASE-model scale ladder (no instruction-tuning) on the multiscr protocol = directly comparable to the instruct
 # table. Breaks the tuning/family confound on "scale is the gate." Small->large; file-skip. gemma4-venv.
 set -u; cd "$(dirname "$0")"
-PY="${VENV:-/path/to/gemma4-venv/bin/python}"
+PY="${VENV:-python}"
 LOG=results/geometry/baseladder.log
 echo "=== base ladder start $(date) ===" | tee -a "$LOG"
 run () {  # model

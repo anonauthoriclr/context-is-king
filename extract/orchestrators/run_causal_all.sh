@@ -1,8 +1,8 @@
 #!/bin/bash
 # Causal suite (Qwen deferred): full-sweep CoT on both layers, capability gradient, k-patch. Sequential, file-skip/resumable.
-cd "${ROOT:-/path/to/context-is-king/extract}"
-V="${VENV:-/path/to/gemma4-venv}"     # gemma4 (31B) + qwen3_5
-VU="${VENV:-/path/to/gemma4u-venv}"   # gemma4_unified (12B)
+cd "${ROOT:?Set ROOT to the extraction working directory}"
+V="${VENV:?Set VENV to the virtual-environment directory}"     # gemma4 (31B) + qwen3_5
+VU="${VENV_UNIFIED:?Set VENV_UNIFIED to the unified-model virtual-environment directory}"   # gemma4_unified (12B)
 export HF_HUB_DISABLE_PROGRESS_BARS=1 TRANSFORMERS_VERBOSITY=error
 D=results/causal; log(){ echo "[$(date +%H:%M:%S)] $*"; }
 gpu_free(){ while nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits | awk '{exit ($1>5000)?0:1}'; do sleep 15; done; }

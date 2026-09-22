@@ -25,12 +25,8 @@ Gemma-4 loading is version-sensitive, so the paper used two venvs (see
 | Qwen-3.5 4B/9B/27B, Gemma-4-31B-it, Llama-3.1-8B-Instruct | `5.5.3` | `gemma4-venv` |
 | Gemma-4 unified E2B / E4B / 12B (`model_type=gemma4_unified`) | `5.12.1` | `gemma4u-venv` |
 
-Export the interpreter once so the orchestrators pick it up:
-
-```bash
-export VENV=/path/to/venv/bin/python
-export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
-```
+Activate the appropriate environment before invoking an extraction script. The
+commands below therefore use its `python` directly.
 
 ## Models (HF ids)
 
@@ -45,12 +41,18 @@ Gemma-4-31B needs a large-memory GPU (bf16).
   `geom_tree.py` / `demo_tree*.py` (imposed trees), `geom_possweep.py`
   (readout-position), `natural_geom.py` / `natural_sentend.py` (no-context
   baseline), `geom_concept.py`, `geom_storyprobe.py`, `family_certify.py`,
-  `verify_pretrained.py`, `xconcept_rings.py`, `adj_rings.py`.
+  `verify_pretrained.py`, `xconcept_rings.py`, `adj_rings.py`. The matched
+  cycle-versus-tree persistent-homology audit uses `ph_matched_extract.py`,
+  `ph_matched_analyze.py`, and `ph_matched_paired.py` (`ripser` required for
+  the two analysis scripts).
 - `behavior/` — accuracy & structure behavior: `defladder_acc.py`,
   `behavior_3regime.py`, `wrap_2x2.py`, `wrap_cooccur_control.py`.
 - `causal/` — activation patching: `causal_use.py`, `causal_cot.py`,
-  `causal_k.py`, plus `apply_judge.py` / `prep_judge_batches.py` and
-  `reconcile_causal.py` (consolidation).
+  `causal_k.py`, `causal_cross_order.py`, plus `apply_judge.py` /
+  `prep_judge_batches.py` and
+  `reconcile_causal.py` (consolidation). `rescore_cot_visible_final.py`
+  deterministically rescores cached Qwen CoT traces from the visible response
+  after the reasoning delimiter.
 - `shapes/` — exp03 topology-type: `shape_test_v4.py`, `shape_extract_forplot.py`.
 - `grid/` — appendix 2-D / topology controls: `geom_qwerty*.py`,
   `geom_natural2d.py`, `geom_grid.py`, `geom_topo.py`, `ph_topology.py`
@@ -62,18 +64,23 @@ Gemma-4-31B needs a large-memory GPU (bf16).
 ## Typical commands
 
 ```bash
-# geometry sweep across the ladder for one concept
-bash orchestrators/sweep_geom.sh days
-
 # a single model / concept
-$VENV geometry/multiscr.py Qwen/Qwen3.5-27B --concepts days,months
+python extract/geometry/multiscr.py Qwen/Qwen3.5-27B --concepts days,months
 
 # causal patching on Gemma-4-31B
-$VENV causal/causal_use.py google/gemma-4-31B-it --nscr 2
+python extract/causal/causal_use.py google/gemma-4-31B-it --nscr 20
 
 # imposed depth-4 tree, neutral queries
-$VENV geometry/geom_tree.py google/gemma-4-31B-it --depth 4 --qset neutral
+python extract/geometry/geom_tree.py google/gemma-4-31B-it --depth 4 --qset neutral
 ```
 
-Outputs land under `../data/` (matching the layout the figure scripts expect).
-See `../ARTIFACT_MAP.md` for exactly which script feeds which paper object.
+Run these commands from the release root. Outputs land under `results/` in the
+same category layout used by `data/`; set `CIK_DATA=results` to redraw figures
+from a fresh extraction. The checked-in `data/` directory is a curated subset,
+not a dump of all raw activations.
+
+The shell files in `orchestrators/` are retained as provenance for the original
+multi-model runs. They are not the supported portable interface: several stage
+historical sweeps or expect an explicit `ROOT`, `VENV`, or `VENV_UNIFIED`.
+See `../ARTIFACT_MAP.md` for exactly which individual script feeds each paper
+object.

@@ -1,8 +1,8 @@
 #!/bin/bash
 # Solidify the causal patch finding (task 3): Gemma CoT 2nd scramble + Qwen-27B cross-model (snap + CoT).
 # File-based step skipping; sequential (one model at a time, each fits one A100). Resumable.
-cd "${ROOT:-/path/to/context-is-king/extract}"
-V="${VENV:-/path/to/gemma4-venv}"
+cd "${ROOT:?Set ROOT to the extraction working directory}"
+V="${VENV:?Set VENV to the virtual-environment directory}"
 export HF_HUB_DISABLE_PROGRESS_BARS=1 TRANSFORMERS_VERBOSITY=error
 mkdir -p results/causal
 log(){ echo "[$(date +%H:%M:%S)] $*"; }

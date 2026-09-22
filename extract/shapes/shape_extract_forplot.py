@@ -2,8 +2,6 @@
 eyeballing. Saves centroids + metadata to npz (no plotting here). Usage: python shape_extract_forplot.py <hf_model>"""
 import os, sys, numpy as np, torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, AutoConfig
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
-from paths import data_dir
 MODEL=sys.argv[1] if len(sys.argv)>1 else "google/gemma-4-31B-it"; FRACD=0.75
 DAYS=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]; N=7
 NEUTRAL=["Consider {e}.","Take note of {e}.","The item is {e}.","Focus on {e}.","Here is an item: {e}.","Regarding {e}."]
@@ -58,7 +56,8 @@ out["NAT_day"]=centroids(neutral(""),"day")
 out["CYCLE_end"]=centroids(neutral(cyc_rule(order)),"end")
 out["LINE_end"]=centroids(neutral(line_rule(order)),"end")
 out["TREE_end"]=centroids(neutral(tree_rule(assign,rng)),"end")
-SP=data_dir("shapes"); os.makedirs(SP, exist_ok=True)
+DATA=os.environ.get("CIK_DATA",os.path.normpath(os.path.join(os.path.dirname(__file__),"..","..","data")))
+SP=os.path.join(DATA,"shapes"); os.makedirs(SP,exist_ok=True)
 np.savez(f"{SP}/shape_plot_{tag}.npz", days=np.array(DAYS), ipos=np.array(ipos), depth=np.array(dvec),
          tree_edges=tree_edges, nat_natorder=np.arange(N), **out)
 print(f"SAVED shape_plot_{tag}.npz",flush=True)
